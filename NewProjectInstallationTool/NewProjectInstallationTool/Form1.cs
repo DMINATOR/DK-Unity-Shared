@@ -62,6 +62,7 @@ namespace NewProjectInstallationTool
 
             txtSharedProjectRoot.Text = Path.GetDirectoryName( Application.ExecutablePath );
             folderBrowserDialog.SelectedPath = txtSharedProjectRoot.Text;
+            SourceSharedDirectory = new DirectoryInfo(folderBrowserDialog.SelectedPath);
 
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_ATTRIBUTES, true);
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_IGNORE, true);
