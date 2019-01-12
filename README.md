@@ -1,7 +1,23 @@
 # DK-Unity-Shared
 Shared project for unity
 
-Branches structure:
+<h2>Instructions for creating new project using DK-Unity-Shared</h2>
+
+Following these steps:
+
+<ul>
+  <li>1. Clone this repository anywhere on your drive. ie (SharedPath)</li>
+  <li>2. Create new Unity Project, save it and remember its path (UnityProjectPath)</li>
+  <li>3. (optional) Create Git repository for the new Unity Project</li>
+  <li>4. Open NewProjectInstallationTool.exe located in (SharedPath)</li>
+  <li>5. Follow the steps, select correct paths to (SharedPath) and (UnityProjectPath)</li>
+</ul>
+
+</p>After app has finished, and depending on the options you've selected, the new Unity project should have all the default folders and symbolic links created automatically. 
+
+<b>Note</b> You can run it multiple times it can add missing folders or symbolic links and doesn't delete anything except Git settings.
+
+<h2>Branches structure</h2>
 
 Based on: https://nvie.com/posts/a-successful-git-branching-model/
 
