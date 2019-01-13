@@ -11,8 +11,9 @@
 # [Aa]ssets/AssetStoreTools*
 
 #Shared directory ignore
-Assets/Plugins/Shared/
-Assets/Editor/Shared/
+Assets/Plugins/Shared
+Assets/Editor/Shared
+Assets/Scripts/Shared
 
 # Visual Studio cache directory
 .vs/
