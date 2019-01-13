@@ -14,6 +14,8 @@ public class ProjectToolsWindow : EditorWindow
         EditorWindow.GetWindow(typeof(ProjectToolsWindow));
     }
 
+    public string[] Strings = { "Larry", "Curly", "Moe" };
+
     void OnGUI()
     {
         GUILayout.Label("Input Settings", EditorStyles.boldLabel);
@@ -29,6 +31,15 @@ public class ProjectToolsWindow : EditorWindow
         }
 
         GUILayout.Label("Project Settings", EditorStyles.boldLabel);
+
+        // "target" can be any class derrived from ScriptableObject 
+        // (could be EditorWindow, MonoBehaviour, etc)
+        ScriptableObject target = this;
+        SerializedObject so = new SerializedObject(target);
+        SerializedProperty stringsProperty = so.FindProperty("Strings");
+
+        EditorGUILayout.PropertyField(stringsProperty, true); // True means show children
+        so.ApplyModifiedProperties(); // Remember to apply modified properties
 
         if (GUILayout.Button("Generate Setting Constants"))
         {
