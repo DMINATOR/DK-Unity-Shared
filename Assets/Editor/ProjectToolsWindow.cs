@@ -27,5 +27,12 @@ public class ProjectToolsWindow : EditorWindow
                 Path = EditorUtilityConstants.SCRIPTS_FOLDER
             });
         }
+
+        GUILayout.Label("Project Settings", EditorStyles.boldLabel);
+
+        if (GUILayout.Button("Generate Setting Constants"))
+        {
+            //TODO - Add settings generator
+        }
     }
 }

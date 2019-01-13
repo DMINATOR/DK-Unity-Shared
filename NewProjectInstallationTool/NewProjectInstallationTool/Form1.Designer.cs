@@ -152,9 +152,9 @@
             this.txtResult.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtResult.Location = new System.Drawing.Point(212, 19);
+            this.txtResult.Location = new System.Drawing.Point(274, 19);
             this.txtResult.Name = "txtResult";
-            this.txtResult.Size = new System.Drawing.Size(933, 364);
+            this.txtResult.Size = new System.Drawing.Size(871, 364);
             this.txtResult.TabIndex = 2;
             this.txtResult.Text = "";
             // 
@@ -176,7 +176,7 @@
             this.checkedListBoxItems.FormattingEnabled = true;
             this.checkedListBoxItems.Location = new System.Drawing.Point(9, 19);
             this.checkedListBoxItems.Name = "checkedListBoxItems";
-            this.checkedListBoxItems.Size = new System.Drawing.Size(197, 364);
+            this.checkedListBoxItems.Size = new System.Drawing.Size(259, 364);
             this.checkedListBoxItems.TabIndex = 0;
             // 
             // Form1

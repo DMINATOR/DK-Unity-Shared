@@ -19,17 +19,21 @@ namespace NewProjectInstallationTool
             //source
             public const string FILE_SOURCE_GIT_ATTRIBUTES = "NewProjectFiles/template.gitattributes";
             public const string FILE_SOURCE_GIT_IGNORE = "NewProjectFiles/template.gitignore";
+            public const string FILE_SOURCE_DEFAULT_SETTINGS = "NewProjectFiles/template.SettingsConstants.cs";
 
             //target
             public const string FILE_TARGET_GIT_ATTRIBUTES = ".gitattributes";
             public const string FILE_TARGET_GIT_IGNORE = ".gitignore";
+            public const string FILE_TARGET_DEFAULT_SETTINGS = "Assets/Scripts/Generated/SettingsConstants.cs";
 
             //available options
             public const string COPY_GIT_ATTRIBUTES = "Copy Unity.gitattributes";
             public const string COPY_GIT_IGNORE = "Copy Unity .gitignore";
+            public const string COPY_DEFAULT_SETTINGS = "Copy Default settings";
             public const string CREATE_DEFAULT_FOLDERS = "Create Default Folders";
             public const string CREATE_MKLINK_EDITOR = "Create MKLink to Shared/Editor";
-            public const string CREATE_MKLINK_SCRIPTS = "Create MKLink to Shared/Scripts";
+            public const string CREATE_MKLINK_SCRIPTS_PLUGINS = "Create MKLink to Shared/Scripts/Plugins";
+            public const string CREATE_MKLINK_SCRIPTS_SHARED = "Create MKLink to Shared/Scripts/Scripts";
         }
 
         DirectoryInfo SourceSharedDirectory;
@@ -66,9 +70,11 @@ namespace NewProjectInstallationTool
 
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_ATTRIBUTES, true);
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_IGNORE, true);
+            checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_SETTINGS, true);
             checkedListBoxItems.Items.Add(SettingAttributes.CREATE_DEFAULT_FOLDERS, true);
             checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_EDITOR, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS, true);
+            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_PLUGINS, true);
+            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_SHARED, true);
 
         }
 
@@ -291,6 +297,10 @@ namespace NewProjectInstallationTool
                             CopyFile(SettingAttributes.FILE_SOURCE_GIT_IGNORE, SettingAttributes.FILE_TARGET_GIT_IGNORE);
                             break;
 
+                        case SettingAttributes.COPY_DEFAULT_SETTINGS:
+                            CopyFile(SettingAttributes.FILE_SOURCE_DEFAULT_SETTINGS, SettingAttributes.FILE_TARGET_DEFAULT_SETTINGS);
+                            break;
+
                         case SettingAttributes.CREATE_DEFAULT_FOLDERS:
                             CreateDefaultFolders();
                             break;
@@ -302,11 +312,18 @@ namespace NewProjectInstallationTool
                                 Path.Combine("Assets", "Editor"));
                             break;
 
-                        case SettingAttributes.CREATE_MKLINK_SCRIPTS:
+                        case SettingAttributes.CREATE_MKLINK_SCRIPTS_PLUGINS:
 
                             CreateSymbolicLink(
                                 Path.Combine("Assets", "Plugins", "Shared"),
-                                Path.Combine("Assets", "Scripts"));
+                                Path.Combine("Assets", "Scripts", "Plugins"));
+                            break;
+
+                        case SettingAttributes.CREATE_MKLINK_SCRIPTS_SHARED:
+
+                            CreateSymbolicLink(
+                                Path.Combine("Assets", "Scripts", "Shared"),
+                                Path.Combine("Assets", "Scripts", "Scripts"));
                             break;
 
                         default:
