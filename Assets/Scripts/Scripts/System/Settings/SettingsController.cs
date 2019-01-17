@@ -4,79 +4,66 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum SettingValueType
+{
+    String,
+    Integer,
+    Float,
+    Bool
+}
 
 /// <summary>
 /// Setting values definition
 /// </summary>
+[System.Serializable]
 public class SettingValue
 {
-    public SettingsConstants.Name Name;
-    public Type type;
+    public string Name;
+
+    public SettingValueType Type;
+    //public Type type;
 
     //current value in memory. Save to commit to disk
-    public object Value;
+    public string Value;
 
-    public object DefaultValue;
-    public object MinValue;
-    public object MaxValue;
+    public string DefaultValue;
+    public string MinValue;
+    public string MaxValue;
 
     public void Save()
     {
-        if (type == typeof(int))
-        {
-            PlayerPrefs.SetInt(Enum.GetName(typeof(SettingsConstants.Name), Name), (int)Convert.ChangeType(Value, typeof(int)));
-        }
-        else
-        if (type == typeof(string))
-        {
-            PlayerPrefs.SetString(Enum.GetName(typeof(SettingsConstants.Name), Name), (string)Convert.ChangeType(Value, typeof(string)));
-        }
-        else
-        if (type == typeof(float))
-        {
-            PlayerPrefs.SetFloat(Enum.GetName(typeof(SettingsConstants.Name), Name), (float)Convert.ChangeType(Value, typeof(float)));
-        }
-        else
-        if (type == typeof(bool))
-        {
-            PlayerPrefs.SetInt(Enum.GetName(typeof(SettingsConstants.Name), Name), (int)Convert.ChangeType(Value, typeof(int)));
-        }
-        else
-        {
-            throw new Exception($"Unknown setting type {type.Name}");
-        }
+       PlayerPrefs.SetString(Name, Value);
     }
 
     public void Load()
     {
-        if (type == typeof(int))
-        {
-            Value = Convert.ChangeType(PlayerPrefs.GetInt(Enum.GetName(typeof(SettingsConstants.Name), Name), DefaultValue == null ? int.MinValue : (int)DefaultValue), type);
-        }
-        else
-        if (type == typeof(string))
-        {
-            Value = Convert.ChangeType(PlayerPrefs.GetString(Enum.GetName(typeof(SettingsConstants.Name), Name), (string)DefaultValue), type);
-        }
-        else
-        if (type == typeof(float))
-        {
-            Value = Convert.ChangeType(PlayerPrefs.GetFloat(Enum.GetName(typeof(SettingsConstants.Name), Name), DefaultValue == null ? float.MinValue : (float)DefaultValue), type);
-        }
-        else
-        if (type == typeof(bool))
-        {
-            Value = Convert.ChangeType(PlayerPrefs.GetInt(Enum.GetName(typeof(SettingsConstants.Name), Name), DefaultValue == null ? int.MinValue : (int)DefaultValue), type);
-        }
-        else
-        {
-            throw new Exception($"Unknown setting type {type.Name}");
-        }
+        Value = PlayerPrefs.GetString(Name, (string)DefaultValue);
     }
 
     public void Set(object value)
     {
-        Value = value;
+        switch( Type )
+        {
+            case SettingValueType.Bool:
+                Value = Convert.ToBoolean(value).ToString();
+                break;
+
+            case SettingValueType.Float:
+                Value = Convert.ToDecimal(value).ToString();
+                break;
+
+            case SettingValueType.Integer:
+                Value = Convert.ToInt32(value).ToString();
+                break;
+
+            case SettingValueType.String:
+                Value = value.ToString();
+                break;
+
+            default:
+                throw new Exception($"Cannot convert value {value.ToString()} to {Type}");
+
+        }
     }
 
     public T Get<T>()
@@ -100,49 +87,64 @@ public class SettingValue
 }
 
 
-public static class SettingsController
+public class SettingsController
 {
-    private static Dictionary<SettingsConstants.Name, SettingValue> values = null;
+    public Dictionary<string, SettingValue> Values = null;
+
+    private static SettingsController instance;
+    public static SettingsController Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new SettingsController();
+                SettingsConstants.Load(); //load keys
+            }
+
+            return instance;
+        }
+    }
 
     /// <summary>
     /// Adds value to the setting
     /// </summary>
     /// <param name="value"></param>
-    public static void AddSetting(SettingValue value)
+    public void AddSetting(SettingValue value)
     {
-        if( values == null )
+        if( Values == null )
         {
-            values = new Dictionary<SettingsConstants.Name, SettingValue>();
+            Values = new Dictionary<string, SettingValue>();
         }
 
-        if (values.ContainsKey(value.Name))
+        if (Values.ContainsKey(value.Name))
         {
             throw new Exception($"Value already exists in settings {value.Name}");
         }
         else
         {
-            values.Add(value.Name, value);
+            Values.Add(value.Name, value);
         }
     }
 
-    public static void LoadFromDisk()
+    public void LoadFromDisk()
     {
-        if (values == null)
+        if (Values == null)
         {
             SettingsConstants.Load();
         }
 
         //Load settings from the disk
-        foreach (var settingValue in values.Values)
+        foreach (var settingValue in Values.Values)
         {
             settingValue.Load();
         }
     }
 
-    public static void SaveToDisk()
+    public void SaveToDisk()
     {
         //Save values in cache to the settings
-        foreach (var settingValue in values.Values)
+        foreach (var settingValue in Values.Values)
         {
             settingValue.Save();
         }
@@ -151,43 +153,43 @@ public static class SettingsController
         PlayerPrefs.Save();
     }
 
-    public static T GetValue<T>(SettingsConstants.Name setting)
+    public T GetValue<T>(string name)
     {
-        if (values == null)
+        if (Values == null)
         {
             LoadFromDisk();
         }
 
-        var value = values[setting];
+        var value = Values[name];
 
         if (value == null)
         {
-            throw new Exception($"Setting not found {Enum.GetName(typeof(SettingsConstants.Name), setting)}");
+            throw new Exception($"Setting not found {name}");
         }
         else
         {
-            return values[setting].Get<T>();
+            return Values[name].Get<T>();
         }
     }
 
-    public static void SetValue<T>(SettingsConstants.Name setting, T value)
+    public void SetValue<T>(string name, T value)
     {
-        if (values == null)
+        if (Values == null)
         {
             LoadFromDisk();
         }
 
         if (value == null)
         {
-            throw new Exception($"Setting not found {Enum.GetName(typeof(SettingsConstants.Name), setting)}");
+            throw new Exception($"Setting not found {name}");
         }
         else
         {
-            values[setting].Set(value);
+            Values[name].Set(value);
         }
     }
 
-    public static void OnSettingLoad(SettingsConstants.Name setting, GameObject gameobj)
+    public void OnSettingLoad(string name, GameObject gameobj)
     {
         var slider_component = gameobj.GetComponent<Slider>();
         var input_component = gameobj.GetComponent<InputField>();
@@ -195,17 +197,17 @@ public static class SettingsController
 
         if (slider_component != null)
         {
-            slider_component.value = GetValue<float>(setting);
+            slider_component.value = GetValue<float>(name);
         }
         else if (input_component != null)
         {
-            input_component.text = GetValue<string>(setting);
+            input_component.text = GetValue<string>(name);
         }
         else if(audio_source_components != null )
         {
             foreach( AudioSource source in audio_source_components )
             {
-                source.volume = GetValue<float>(setting);
+                source.volume = GetValue<float>(name);
             }
         }
         else
@@ -214,9 +216,9 @@ public static class SettingsController
         }
     }
 
-    public static void OnSettingChanged(SettingsConstants.Name setting, object value)
+    public void OnSettingChanged(string name, object value)
     {
-        SetValue(setting, value);
+        SetValue(name, value);
     }
 }
 
