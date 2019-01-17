@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ProjectToolsWindow : EditorWindow
 {
-    //SettingsConstantsGenerator generator = null;
+    public SettingValueData SettingValueData = null;
 
     // Add menu item named "My Window" to the Window menu
     [MenuItem("Project/Project Tools")]
@@ -40,32 +40,35 @@ public class ProjectToolsWindow : EditorWindow
 
     void OnProjectSettings()
     {
-        //Debug.Log($"Loaded {UnityEngine.Random.RandomRange(0,100)}");
         GUILayout.Label("Project Settings", EditorStyles.boldLabel);
 
-        //// "target" can be any class derrived from ScriptableObject 
-        //// (could be EditorWindow, MonoBehaviour, etc)
-        //ScriptableObject target = this;
-        //SerializedObject so = new SerializedObject(target);
-        //SerializedProperty stringsProperty = so.FindProperty("Strings");
-
-        //var generator = new SettingsConstantsGenerator();
-
-        var generator = CreateInstance<SettingsConstantsGenerator>();
-
-        //ScriptableObject target = generator;
-        //SerializedObject so = new SerializedObject(target);
-        //SerializedProperty property = so.FindProperty($"{nameof(generator.Values)}");
-
-        EditorGUILayout.PropertyField(generator.Property, true); // True means show children
-
-        generator.ApplyModifiedProperties();
-
-        //so.ApplyModifiedProperties(); // Remember to apply modified properties
-
-        if (GUILayout.Button("Generate Setting Constants"))
+        if (SettingValueData != null)
         {
-            //TODO - Add settings generator 
+            SerializedObject serializedObject = new SerializedObject(this);
+            SerializedProperty serializedProperty = serializedObject.FindProperty(nameof(SettingValueData));
+            EditorGUILayout.PropertyField(serializedProperty, true);
+
+            serializedObject.ApplyModifiedProperties();
+
+            if (GUILayout.Button("Save and Generate Settings"))
+            {
+                //save values
+                AssetLoader.Save(SettingValueData);
+
+                //generate constants as well
+                EditorUtility.GenerateClass(new EditorCodeGenerationDefinition()
+                {
+                    Name = "SettingsConstants",
+                    Contents = SettingsConstantsGenerator.Generate(SettingValueData),
+                    Path = EditorUtilityConstants.SCRIPTS_FOLDER
+                });
+
+            }
+        }
+
+        if (GUILayout.Button("Load data"))
+        {
+            SettingValueData = AssetLoader.Load<SettingValueData>();
         }
     }
 }

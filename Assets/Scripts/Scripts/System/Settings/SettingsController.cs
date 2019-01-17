@@ -12,6 +12,12 @@ public enum SettingValueType
     Bool
 }
 
+[System.Serializable]
+public class SettingValueData : DKAsset
+{
+    public List<SettingValue> Settings;
+}
+
 /// <summary>
 /// Setting values definition
 /// </summary>
