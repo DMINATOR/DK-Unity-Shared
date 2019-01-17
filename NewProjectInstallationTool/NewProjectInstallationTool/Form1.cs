@@ -20,16 +20,19 @@ namespace NewProjectInstallationTool
             public const string FILE_SOURCE_GIT_ATTRIBUTES = "NewProjectFiles/template.gitattributes";
             public const string FILE_SOURCE_GIT_IGNORE = "NewProjectFiles/template.gitignore";
             public const string FILE_SOURCE_DEFAULT_SETTINGS = "NewProjectFiles/template.SettingsConstants.cs";
+            public const string FILE_SOURCE_DEFAULT_INPUT = "NewProjectFiles/template.InputConstants.cs";
 
             //target
             public const string FILE_TARGET_GIT_ATTRIBUTES = ".gitattributes";
             public const string FILE_TARGET_GIT_IGNORE = ".gitignore";
             public const string FILE_TARGET_DEFAULT_SETTINGS = "Assets/Scripts/Generated/SettingsConstants.cs";
+            public const string FILE_TARGET_DEFAULT_INPUT = "Assets/Scripts/Generated/InputConstants.cs";
 
             //available options
             public const string COPY_GIT_ATTRIBUTES = "Copy Unity.gitattributes";
             public const string COPY_GIT_IGNORE = "Copy Unity .gitignore";
             public const string COPY_DEFAULT_SETTINGS = "Copy Default settings";
+            public const string COPY_DEFAULT_INPUTS = "Copy Default input settings";
             public const string CREATE_DEFAULT_FOLDERS = "Create Default Folders";
             public const string CREATE_MKLINK_EDITOR = "Create MKLink to Shared/Editor";
             public const string CREATE_MKLINK_SCRIPTS_PLUGINS = "Create MKLink to Shared/Scripts/Plugins";
@@ -71,6 +74,7 @@ namespace NewProjectInstallationTool
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_ATTRIBUTES, true);
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_IGNORE, true);
             checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_SETTINGS, true);
+            checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_INPUTS, true);
             checkedListBoxItems.Items.Add(SettingAttributes.CREATE_DEFAULT_FOLDERS, true);
             checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_EDITOR, true);
             checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_PLUGINS, true);
@@ -295,6 +299,10 @@ namespace NewProjectInstallationTool
 
                         case SettingAttributes.COPY_GIT_IGNORE:
                             CopyFile(SettingAttributes.FILE_SOURCE_GIT_IGNORE, SettingAttributes.FILE_TARGET_GIT_IGNORE);
+                            break;
+
+                        case SettingAttributes.COPY_DEFAULT_INPUTS:
+                            CopyFile(SettingAttributes.FILE_SOURCE_DEFAULT_INPUT, SettingAttributes.FILE_TARGET_DEFAULT_INPUT);
                             break;
 
                         case SettingAttributes.COPY_DEFAULT_SETTINGS:
