@@ -197,10 +197,15 @@ public class SettingsController
 
     public void OnSettingLoad(string name, GameObject gameobj)
     {
+        var text_component = gameobj.GetComponent<Text>();
         var slider_component = gameobj.GetComponent<Slider>();
         var input_component = gameobj.GetComponent<InputField>();
         var audio_source_components = gameobj.GetComponents<AudioSource>();
 
+        if( text_component != null )
+        {
+            text_component.text = GetValue<string>(name);
+        }
         if (slider_component != null)
         {
             slider_component.value = GetValue<float>(name);

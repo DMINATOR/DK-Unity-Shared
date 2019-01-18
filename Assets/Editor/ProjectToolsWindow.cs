@@ -8,6 +8,8 @@ public class ProjectToolsWindow : EditorWindow
 {
     public SettingValueData SettingValueData = null;
 
+    Vector2 scrollPos;
+
     // Add menu item named "My Window" to the Window menu
     [MenuItem("Project/Project Tools")]
     public static void ShowWindow()
@@ -18,9 +20,13 @@ public class ProjectToolsWindow : EditorWindow
 
     void OnGUI()
     {
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, false, false);
+
         OnGUIInputSettings();
 
         OnProjectSettings();
+
+        EditorGUILayout.EndScrollView();
     }
 
     void OnGUIInputSettings()
