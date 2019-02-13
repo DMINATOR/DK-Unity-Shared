@@ -133,6 +133,14 @@ namespace NewProjectInstallationTool
                 File.Delete(full_destination_file);
             }
 
+            var dir = new FileInfo(full_destination_file).Directory;
+
+            if( !dir.Exists )
+            {
+                AddLogMessageLine($"Creating new dir {dir.FullName}");
+                dir.Create();
+            }
+
             File.Copy(full_source_file, full_destination_file);
 
             AddLogMessageLine($"DONE.");
