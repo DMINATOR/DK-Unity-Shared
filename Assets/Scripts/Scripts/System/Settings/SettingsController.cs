@@ -159,6 +159,11 @@ public class SettingsController
         PlayerPrefs.Save();
     }
 
+    public T GetValue<T>(SettingsConstants.Name setting)
+    {
+        return GetValue<T>(Enum.GetName(typeof(SettingsConstants.Name), setting));
+    }
+
     public T GetValue<T>(string name)
     {
         if (Values == null)
