@@ -70,16 +70,29 @@ namespace NewProjectInstallationTool
             txtSharedProjectRoot.Text = Path.GetDirectoryName( Application.ExecutablePath );
             folderBrowserDialog.SelectedPath = txtSharedProjectRoot.Text;
             SourceSharedDirectory = new DirectoryInfo(folderBrowserDialog.SelectedPath);
+        }
 
-            checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_ATTRIBUTES, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_IGNORE, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_SETTINGS, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_INPUTS, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_DEFAULT_FOLDERS, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_EDITOR, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_PLUGINS, true);
-            checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_SHARED, true);
 
+        private void AddCheckedItems()
+        {
+            if (checkedListBoxItems.Items.Count == 0)
+            {
+                checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_ATTRIBUTES, true);
+                checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_IGNORE, true);
+
+                //if files exist already - (when project has matured) have these set to false
+                bool exist = File.Exists(Path.Combine(TargetDirectory.FullName, SettingAttributes.FILE_TARGET_DEFAULT_SETTINGS));
+                checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_SETTINGS, !exist);
+
+                exist = File.Exists(Path.Combine(TargetDirectory.FullName, SettingAttributes.FILE_TARGET_DEFAULT_INPUT));
+                checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_INPUTS, !exist);
+
+
+                checkedListBoxItems.Items.Add(SettingAttributes.CREATE_DEFAULT_FOLDERS, true);
+                checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_EDITOR, true);
+                checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_PLUGINS, true);
+                checkedListBoxItems.Items.Add(SettingAttributes.CREATE_MKLINK_SCRIPTS_SHARED, true);
+            }
         }
 
         private void buttonSharedProject_Click(object sender, EventArgs e)
@@ -109,6 +122,7 @@ namespace NewProjectInstallationTool
                 }
                 else
                 {
+                    AddCheckedItems();
                     groupBoxProjectOptions.Enabled = true;
                 }
             }
