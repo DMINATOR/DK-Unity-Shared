@@ -8,9 +8,11 @@ using UnityEngine;
 /// </summary>
 public class LogToConsole : ILogTarget
 {
+    public LogSettings Settings { get; set; }
+
     public void Error(string source, string message, Exception ex)
     {
-        Debug.Log($"[{source}] - {message}");
+        Debug.LogError($"[{source}] - {message}");
 
         if( ex != null )
         {

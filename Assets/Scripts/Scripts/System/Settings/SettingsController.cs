@@ -27,7 +27,6 @@ public class SettingValue
     public string Name;
 
     public SettingValueType Type;
-    //public Type type;
 
     //current value in memory. Save to commit to disk
     public string Value;

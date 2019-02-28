@@ -6,7 +6,11 @@ using UnityEngine;
 
 public class ProjectToolsWindow : EditorWindow
 {
+    public bool Loaded = false;
+
     public SettingValueData SettingValueData = null;
+
+    public LogConfigurationData LogConfigurationData = null;
 
     Vector2 scrollPos;
 
@@ -24,7 +28,15 @@ public class ProjectToolsWindow : EditorWindow
 
         OnGUIInputSettings();
 
-        OnProjectSettings();
+        SerializedObject serializedObject = new SerializedObject(this);
+
+        OnInitialLoad();
+
+        OnProjectSettings(serializedObject);
+
+        OnDebugSettings(serializedObject);
+
+        serializedObject.ApplyModifiedProperties();
 
         EditorGUILayout.EndScrollView();
     }
@@ -44,17 +56,25 @@ public class ProjectToolsWindow : EditorWindow
         }
     }
 
-    void OnProjectSettings()
+
+    void OnInitialLoad()
+    {
+        if (!Loaded)
+        {
+            SettingValueData = AssetLoader.Load<SettingValueData>();
+            LogConfigurationData = AssetLoader.Load<LogConfigurationData>();
+            Loaded = true;
+        }
+    }
+
+    void OnProjectSettings(SerializedObject serializedObject)
     {
         GUILayout.Label("Project Settings", EditorStyles.boldLabel);
 
-        if (SettingValueData != null)
+        if (this.SettingValueData != null)
         {
-            SerializedObject serializedObject = new SerializedObject(this);
             SerializedProperty serializedProperty = serializedObject.FindProperty(nameof(SettingValueData));
             EditorGUILayout.PropertyField(serializedProperty, true);
-
-            serializedObject.ApplyModifiedProperties();
 
             if (GUILayout.Button("Save and Generate Settings"))
             {
@@ -71,10 +91,51 @@ public class ProjectToolsWindow : EditorWindow
 
             }
         }
+    }
 
-        if (GUILayout.Button("Load data"))
+    void OnDebugSettings(SerializedObject serializedObject)
+    {
+        GUILayout.Label("Debug Settings", EditorStyles.boldLabel);
+
+        if (LogConfigurationData != null)
         {
-            SettingValueData = AssetLoader.Load<SettingValueData>();
+            //SerializedObject serializedObject = new SerializedObject(this);
+            SerializedProperty serializedProperty = serializedObject.FindProperty(nameof(LogConfigurationData));
+            EditorGUILayout.PropertyField(serializedProperty, true);
+
+            //serializedObject.ApplyModifiedProperties();
+
+            if (GUILayout.Button("Save"))
+            {
+                //save values
+                AssetLoader.Save(LogConfigurationData);
+                Log.Instance.Load(); //reload again
+            }
         }
+
+        if (GUILayout.Button("Load Defaults"))
+        {
+            LogConfigurationData = Log.GetDefaults();
+        }
+
+        //Buttons to debug different logging methods:
+        GUILayout.BeginHorizontal();
+
+        if (GUILayout.Button("Log - Test Info"))
+        {
+            Log.Instance.Info("test", "Test Info");
+        }
+
+        if (GUILayout.Button("Log - Test Warning"))
+        {
+            Log.Instance.Warning("test", "Test Warning");
+        }
+
+        if (GUILayout.Button("Log - Test Error"))
+        {
+            Log.Instance.Error("test", "Test Error");
+        }
+
+        GUILayout.EndHorizontal();
     }
 }
