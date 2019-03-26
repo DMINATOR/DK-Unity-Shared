@@ -9,7 +9,7 @@ using UnityEngine;
 [System.Serializable]
 public partial class SaveGameData : DKAsset
 {
-    public int BaseField;
+
 }
 
 public class SaveGameController
