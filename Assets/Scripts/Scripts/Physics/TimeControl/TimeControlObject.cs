@@ -20,9 +20,13 @@ public class TimeControlObject : MonoBehaviour
     [SerializeField]
     private int CurrentPosition;
 
-    [Tooltip("Time control records")]
+    [Tooltip("Time control records (deltas)")]
     [SerializeField]
     private TimeControlElements[] Elements;
+
+    [Tooltip("Last actual position and rotation")]
+    [SerializeField]
+    TimeControlElements LastElementActual;
 
     /// <summary>
     /// Previous position for the last object
@@ -31,7 +35,7 @@ public class TimeControlObject : MonoBehaviour
     {
         get
         {
-            if( CurrentPosition <= 0 )
+            if (CurrentPosition <= 0)
             {
                 return Elements.Length - 1;
             }
@@ -59,29 +63,71 @@ public class TimeControlObject : MonoBehaviour
         TimeControlController.Instance.UnRegister(this);
     }
 
-    private void DebugDrawPositions()
+    private void DebugDrawPositionsLast()
     {
         if (GameController.Instance.DebugShowControlObjects)
         {
             var divider = 1.0f / Elements.Length;
             var value = divider * CurrentPosition;
 
+            var v1 = LastElementActual.Position - Elements[CurrentPosition].Position;
+            var v2 = LastElementActual.Position;
+            //Log.Instance.Info("TimeControl", $"{PreviousPosition} ({v1.x},{v1.y},{v1.z}) => {CurrentPosition} ({v2.x},{v2.y},{v2.z})");
+
             Debug.DrawLine(
-                Elements[PreviousPosition].Position,
-                Elements[CurrentPosition].Position,
-                new Color(value, value, value),
+                v1,
+                v2,
+                new Color(0, value, 0),
                 GameController.Instance.DebugShowControlObjectsTime);
+        }
+    }
+
+    private void DebugDrawPositionsAll()
+    {
+        if (GameController.Instance.DebugShowControlObjects)
+        {
+            var divider = 1.0f / Elements.Length;
+
+            var v1 = LastElementActual.Position;
+            var v2 = LastElementActual.Position;
+
+            var cntr = 0;
+            for (var i = CurrentPosition; cntr < Elements.Length; cntr++, i--)
+            {
+                var correction = i;
+
+                if (correction < 0)
+                {
+                    correction = correction + Elements.Length;
+                }
+
+                var currentElement = Elements[correction % Elements.Length];
+
+                v2 = v1 - currentElement.Position;
+
+                Debug.DrawLine(
+                    v1,
+                    v2,
+                    new Color(0, divider * cntr, 0),
+                    GameController.Instance.DebugShowControlObjectsTime);
+
+                v1 = v2;
+            }
         }
     }
 
     private void RememberPosition(int index)
     {
-        //Record changes
-        Elements[index].Position = transform.position;
-        Elements[index].Rotation = transform.rotation;
+        //Record changes (deltas against current values)
+        Elements[index].Position = transform.position - LastElementActual.Position;
+        Elements[index].Rotation = LastElementActual.Rotation * Quaternion.Inverse(transform.rotation);
         Elements[index].DeltaTime = Time.realtimeSinceStartup;
 
-        DebugDrawPositions();
+        //remember new position and rotation
+        LastElementActual.Position = transform.position;
+        LastElementActual.Rotation = transform.rotation;
+
+        DebugDrawPositionsAll();
     }
 
     private bool AreDifferent(float a, float b)
@@ -96,24 +142,37 @@ public class TimeControlObject : MonoBehaviour
         }
     }
 
+    public void LogAndTranslateToPointInstantly(Vector3 position, Quaternion rotation)
+    {
+        //Apply transform
+        transform.position = position;
+        transform.rotation = rotation;
+
+        CurrentPosition = (CurrentPosition + 1) % Elements.Length;
+
+        //remember position and rotation
+        LastElementActual.Position = transform.position;
+        LastElementActual.Rotation = transform.rotation;
+
+        RememberPosition(CurrentPosition);
+    }
+
     public void LogAndTranslateTo(Vector3 position, Quaternion rotation)
     {
         //Apply transform
         transform.position = position;
         transform.rotation = rotation;
 
-        var lastElement = Elements[CurrentPosition];
-
         if (
             //Position
-            AreDifferent(lastElement.Position.x, position.x) ||
-            AreDifferent(lastElement.Position.y, position.y) ||
-            AreDifferent(lastElement.Position.z, position.z) ||
+            AreDifferent(LastElementActual.Position.x, position.x) ||
+            AreDifferent(LastElementActual.Position.y, position.y) ||
+            AreDifferent(LastElementActual.Position.z, position.z) ||
 
             //Rotation
-            AreDifferent(lastElement.Rotation.x, rotation.x) ||
-            AreDifferent(lastElement.Rotation.y, rotation.y) ||
-            AreDifferent(lastElement.Rotation.z, rotation.z)
+            AreDifferent(LastElementActual.Rotation.x, rotation.x) ||
+            AreDifferent(LastElementActual.Rotation.y, rotation.y) ||
+            AreDifferent(LastElementActual.Rotation.z, rotation.z)
             )
         {
             CurrentPosition = (CurrentPosition + 1) % Elements.Length;
