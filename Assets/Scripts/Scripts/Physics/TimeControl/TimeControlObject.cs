@@ -63,55 +63,53 @@ public class TimeControlObject : MonoBehaviour
         TimeControlController.Instance.UnRegister(this);
     }
 
-    private void DebugDrawPositionsLast()
-    {
-        if (GameController.Instance.DebugShowControlObjects)
-        {
-            var divider = 1.0f / Elements.Length;
-            var value = divider * CurrentPosition;
-
-            var v1 = LastElementActual.Position - Elements[CurrentPosition].Position;
-            var v2 = LastElementActual.Position;
-            //Log.Instance.Info("TimeControl", $"{PreviousPosition} ({v1.x},{v1.y},{v1.z}) => {CurrentPosition} ({v2.x},{v2.y},{v2.z})");
-
-            Debug.DrawLine(
-                v1,
-                v2,
-                new Color(0, value, 0),
-                GameController.Instance.DebugShowControlObjectsTime);
-        }
-    }
-
-    private void DebugDrawPositionsAll()
+    private void DebugDrawPositions()
     {
         if (GameController.Instance.DebugShowControlObjects)
         {
             var divider = 1.0f / Elements.Length;
 
-            var v1 = LastElementActual.Position;
-            var v2 = LastElementActual.Position;
-
-            var cntr = 0;
-            for (var i = CurrentPosition; cntr < Elements.Length; cntr++, i--)
+            if( GameController.Instance.DebugShowControlObjectsFullPath )
             {
-                var correction = i;
+                var v1 = LastElementActual.Position;
+                var v2 = LastElementActual.Position;
 
-                if (correction < 0)
+                var cntr = 0;
+                for (var i = CurrentPosition; cntr < Elements.Length; cntr++, i--)
                 {
-                    correction = correction + Elements.Length;
+                    var correction = i;
+
+                    if (correction < 0)
+                    {
+                        correction = correction + Elements.Length;
+                    }
+
+                    var currentElement = Elements[correction % Elements.Length];
+
+                    v2 = v1 - currentElement.Position;
+
+                    Debug.DrawLine(
+                        v1,
+                        v2,
+                        new Color(0, divider * cntr, 0),
+                        GameController.Instance.DebugShowControlObjectsTime);
+
+                    v1 = v2;
                 }
+            }
+            else
+            {
+                var value = divider * CurrentPosition;
 
-                var currentElement = Elements[correction % Elements.Length];
-
-                v2 = v1 - currentElement.Position;
+                var v1 = LastElementActual.Position - Elements[CurrentPosition].Position;
+                var v2 = LastElementActual.Position;
+                //Log.Instance.Info("TimeControl", $"{PreviousPosition} ({v1.x},{v1.y},{v1.z}) => {CurrentPosition} ({v2.x},{v2.y},{v2.z})");
 
                 Debug.DrawLine(
                     v1,
                     v2,
-                    new Color(0, divider * cntr, 0),
+                    new Color(0, value, 0),
                     GameController.Instance.DebugShowControlObjectsTime);
-
-                v1 = v2;
             }
         }
     }
@@ -127,7 +125,7 @@ public class TimeControlObject : MonoBehaviour
         LastElementActual.Position = transform.position;
         LastElementActual.Rotation = transform.rotation;
 
-        DebugDrawPositionsAll();
+        DebugDrawPositions();
     }
 
     private bool AreDifferent(float a, float b)
@@ -150,7 +148,7 @@ public class TimeControlObject : MonoBehaviour
 
         CurrentPosition = (CurrentPosition + 1) % Elements.Length;
 
-        //remember position and rotation
+        //remember position and rotation so that Delta won't be calculated
         LastElementActual.Position = transform.position;
         LastElementActual.Rotation = transform.rotation;
 

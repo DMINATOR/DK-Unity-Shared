@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Time control controller is used to control time of individual time control objects
 /// </summary>
+[Serializable]
 public class TimeControlController
 {
     [Header("Settings")]
@@ -17,6 +20,7 @@ public class TimeControlController
     [Tooltip("Settings to specify threshold when time control changes are recorded")]
     public SettingsConstants.Name TIME_CONTROL_CHANGE_DIFFERENCE = SettingsConstants.Name.TIME_CONTROL_CHANGE_DIFFERENCE;
 
+
     [Header("Loaded Settings")]
 
     [ReadOnly]
@@ -27,8 +31,37 @@ public class TimeControlController
     [Tooltip("Global size of all elements per single Time Control Object")]
     public float ThresholdChangeDifference;
 
+
+    [Tooltip("Hidden field from editor, but actually used by all game objects")]
+    float _timeScale = 1.0f;
+    public float TimeScale
+    {
+        get { return _timeScale; }
+        set
+        {
+            _timeScale = value;
+            OnTimeScaleChanged();
+        }
+    }
+
+
+    /// <summary>
+    /// Current Time scale multipled by delta
+    /// </summary>
+    public float TimeScaleDelta
+    {
+        get
+        {
+            return TimeScale * Time.deltaTime;
+        }
+    }
+
+
     [Tooltip("References to all time control object, for entire scene")]
     public HashSet<TimeControlObject> TimeControlObjects = new HashSet<TimeControlObject>();
+
+    public delegate void TimeScaleChangedHandler();
+    public event TimeScaleChangedHandler TimeScaleChanged;
 
 
     private static TimeControlController instance;
@@ -51,7 +84,6 @@ public class TimeControlController
         ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
     }
 
-
     public void Register(TimeControlObject obj)
     {
         TimeControlObjects.Add(obj);
@@ -60,5 +92,10 @@ public class TimeControlController
     public void UnRegister(TimeControlObject obj)
     {
         TimeControlObjects.Remove(obj);
+    }
+
+    public void OnTimeScaleChanged()
+    {
+        TimeScaleChanged?.Invoke();
     }
 }
