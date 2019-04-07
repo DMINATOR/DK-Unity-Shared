@@ -46,9 +46,29 @@ public class TimeControlController
 
 
     /// <summary>
-    /// Current Time scale multipled by delta
+    /// Current Time scale multipled by delta, always positive
     /// </summary>
     public float TimeScaleDelta
+    {
+        get
+        {
+            if( TimeScale < 0 )
+            {
+                //Anything that is slower than 0 is reversed and should be using Reverse logic, freeze actual logic for this object instead
+                return 0;
+            }
+            else
+            {
+                //Only positive time scale returned
+                return TimeScaleDeltaRaw;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Current Time scale multipled by delta, can be negative
+    /// </summary>
+    public float TimeScaleDeltaRaw
     {
         get
         {
