@@ -8,7 +8,7 @@ using UnityEngine.Events;
 /// Time control controller is used to control time of individual time control objects
 /// </summary>
 [Serializable]
-public class TimeControlController
+public class TimeControlController : MonoBehaviour
 {
     [Header("Settings")]
 
@@ -32,16 +32,13 @@ public class TimeControlController
     public float ThresholdChangeDifference;
 
 
-    [Tooltip("Hidden field from editor, but actually used by all game objects")]
+    [Tooltip("Actual Time Scale value used by most objects")]
+    [SerializeField]
+    [ReadOnly]
     float _timeScale = 1.0f;
     public float TimeScale
     {
         get { return _timeScale; }
-        set
-        {
-            _timeScale = value;
-            OnTimeScaleChanged();
-        }
     }
 
 
@@ -65,6 +62,11 @@ public class TimeControlController
         }
     }
 
+    [Header("Time Scale control")]
+
+    [Tooltip("Override for default Time scale values (if specified).")]
+    public TimeControlAffectionDefinition Override;
+
     /// <summary>
     /// Current Time scale multipled by delta, can be negative
     /// </summary>
@@ -80,28 +82,44 @@ public class TimeControlController
     [Tooltip("References to all time control object, for entire scene")]
     public HashSet<TimeControlObject> TimeControlObjects = new HashSet<TimeControlObject>();
 
-    public delegate void TimeScaleChangedHandler();
-    public event TimeScaleChangedHandler TimeScaleChanged;
+    //Public instance to time controller
+    public static TimeControlController Instance = null;
 
-
-    private static TimeControlController instance;
-    public static TimeControlController Instance
+    private void Awake()
     {
-        get
+        if (Override != null)
         {
-            if (instance == null)
-            {
-                instance = new TimeControlController();
-            }
+            Override.AffectionChanged += OnTimeScaleChanged;
+        }
 
-            return instance;
+        //Create instance
+        if (Instance == null)
+        {
+            ElementsSize = SettingsController.Instance.GetValue<int>(TIME_CONTROL_ELEMENTS_SIZE_NAME);
+            ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
         }
     }
 
-    public TimeControlController()
+    private void OnDestroy()
     {
-        ElementsSize = SettingsController.Instance.GetValue<int>(TIME_CONTROL_ELEMENTS_SIZE_NAME);
-        ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
+        if( Override != null )
+        {
+            Override.AffectionChanged -= OnTimeScaleChanged;
+        }
+    }
+
+    public TimeControlTimeScale CreateTimeScaleInstance(MonoBehaviour obj)
+    {
+        var affectionReceiver = obj.GetComponent<TimeControlAffectionReceiver>();
+
+        var timeScale = new TimeControlTimeScale(affectionReceiver);
+
+        return timeScale;
     }
 
     public void Register(TimeControlObject obj)
@@ -116,6 +134,6 @@ public class TimeControlController
 
     public void OnTimeScaleChanged()
     {
-        TimeScaleChanged?.Invoke();
+        _timeScale = Override.TimeScale;
     }
 }
