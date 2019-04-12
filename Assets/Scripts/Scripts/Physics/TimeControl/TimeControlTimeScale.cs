@@ -9,25 +9,57 @@ public class TimeControlTimeScale
     /// </summary>
     TimeControlAffectionReceiver _receiver;
 
+    [Tooltip("Current time, scaled by effective time scale at the moment")]
+    [SerializeField]
+    private float _currentTime;
+    public float CurrentTime
+    {
+        get
+        {
+            return _currentTime;
+        }
+    }
+
+    /// <summary>
+    /// Retrieves current time scale delta value
+    /// </summary>
+    private float _timeScaleDelta;
     public float TimeScaleDelta
     {
         get
         {
-            if( _receiver != null )
+            if ( _receiver != null )
             {
                 //Receive time scale from the receiver
-                return _receiver.TimeScaleDelta;
+                _timeScaleDelta = _receiver.TimeScaleDelta;
             }
             else
             {
                 //No custom receivers specified - revert to default
-                return TimeControlController.Instance.TimeScaleDelta;
+                _timeScaleDelta = TimeControlController.Instance.TimeScaleDelta;
             }
+            return _timeScaleDelta;
         }
     }
 
     public TimeControlTimeScale(TimeControlAffectionReceiver receiver)
     {
         _receiver = receiver;
+    }
+
+    /// <summary>
+    /// Call to update time information each frame
+    /// </summary>
+    public void Update()
+    {
+        _currentTime += TimeScaleDelta;
+    }
+
+    /// <summary>
+    /// Resets time back to original value
+    /// </summary>
+    public void ResetCurrentTime()
+    {
+        _currentTime = 0.0f;
     }
 }

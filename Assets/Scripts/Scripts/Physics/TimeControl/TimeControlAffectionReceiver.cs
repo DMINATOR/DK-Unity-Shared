@@ -39,6 +39,8 @@ public class TimeControlAffectionReceiver : AffectionReceiver
 
     protected override void OnAffectionChanged()
     {
+        base.OnAffectionChanged();
+
         _timeScaleCache = ((TimeControlAffectionDefinition)Affection).TimeScale;
     }
 }

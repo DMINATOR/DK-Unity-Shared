@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Rotates object around body
+/// Rotates object around it's axis
 /// </summary>
 public class RotateAroundAxis : MonoBehaviour
 {
-    [Tooltip("Rotation speed")]
-    public float Speed;
+    [Tooltip("Rotation speed (degrees/per second)")]
+    [SerializeField]
+    private float Speed = 0.0f ;
 
     [Tooltip("Rotation Vector")]
-    public Vector3 Rotation;
+    [SerializeField]
+    private Vector3 Rotation = Vector3.zero;
 
-    [Tooltip("Current Time Scale Instance assigned for this")]
-    public TimeControlTimeScale TimeScaleInstance;
+    [Tooltip("Current Time Scale Instance assigned for this object")]
+    [SerializeField]
+    private TimeControlTimeScale TimeScaleInstance;
 
     void Start()
     {
@@ -26,6 +29,7 @@ public class RotateAroundAxis : MonoBehaviour
     {
         if (Speed != 0)
         {
+            TimeScaleInstance.Update();
             transform.Rotate(Rotation * Speed * TimeScaleInstance.TimeScaleDelta);
         }
     }
