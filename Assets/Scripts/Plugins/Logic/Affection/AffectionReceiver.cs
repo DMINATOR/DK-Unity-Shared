@@ -5,11 +5,20 @@ using UnityEngine.Events;
 
 public class AffectionReceiver : MonoBehaviour
 {
+    //Exposed to Editor
+
+    //Exposed to other classes
+
     [Tooltip("Current affection applied to this receiver, to override default behavior")]
     public AffectionDefinitionBase Affection;
 
+    [Tooltip("Current affection applied to this receiver from Applicator, to override default behavior")]
+    public AffectionDefinitionBase AffectionFromApplicator;
+
     public delegate void AffectionChangedHandler();
     public event AffectionChangedHandler AffectionChanged;
+
+    //Internal
 
 
     // Start is called before the first frame update
@@ -41,7 +50,7 @@ public class AffectionReceiver : MonoBehaviour
         }
     }
 
-    protected virtual void OnAffectionChanged()
+    public virtual void OnAffectionChanged()
     {
         AffectionChanged?.Invoke();
     }

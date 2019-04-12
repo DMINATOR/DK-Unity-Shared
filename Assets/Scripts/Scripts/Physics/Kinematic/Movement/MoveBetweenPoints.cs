@@ -14,11 +14,11 @@ public class MoveBetweenPoints : MonoBehaviour
     }
 
     //Exposed to Editor
+
     [Tooltip("Movement option")]
     [SerializeField]
     private MoveOption Option = MoveOption.PingPong;
 
-    //Exposed to Editor
     [Tooltip("Initial point")]
     [SerializeField]
     private Vector3 TargetPointDelta = Vector3.zero;

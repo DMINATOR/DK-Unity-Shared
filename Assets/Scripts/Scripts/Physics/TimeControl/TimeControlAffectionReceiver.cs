@@ -37,10 +37,16 @@ public class TimeControlAffectionReceiver : AffectionReceiver
         }
     }
 
-    protected override void OnAffectionChanged()
+    public override void OnAffectionChanged()
     {
         base.OnAffectionChanged();
 
         _timeScaleCache = ((TimeControlAffectionDefinition)Affection).TimeScale;
+
+        //if another affection is applied, multiply by
+        if( AffectionFromApplicator != null )
+        {
+            _timeScaleCache = _timeScaleCache * ((TimeControlAffectionDefinition)AffectionFromApplicator).TimeScale;
+        }
     }
 }
