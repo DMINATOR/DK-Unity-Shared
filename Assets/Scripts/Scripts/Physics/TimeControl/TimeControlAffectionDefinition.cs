@@ -18,4 +18,18 @@ public class TimeControlAffectionDefinition : AffectionDefinitionBase
             OnValidate();
         }
     }
+
+    [Tooltip("How fast affection is applied")]
+    [Range(0, 10f)]
+    [SerializeField]
+    float _speed = 0.1f;
+    public float Speed
+    {
+        get { return _speed; }
+        set
+        {
+            _speed = value;
+            OnValidate();
+        }
+    }
 }

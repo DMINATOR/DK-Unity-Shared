@@ -27,6 +27,8 @@ public class AffectionReceiver : MonoBehaviour
         RegisterEvents();
 
         OnAffectionChanged();
+
+        OnStart();
     }
 
     protected void OnDestroy()
@@ -48,6 +50,11 @@ public class AffectionReceiver : MonoBehaviour
         {
             Affection.AffectionChanged -= OnAffectionChanged;
         }
+    }
+
+    public virtual void OnStart()
+    {
+
     }
 
     public virtual void OnAffectionChanged()
