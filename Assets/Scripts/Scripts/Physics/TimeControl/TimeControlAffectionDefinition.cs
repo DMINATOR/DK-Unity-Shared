@@ -22,13 +22,13 @@ public class TimeControlAffectionDefinition : AffectionDefinitionBase
     [Tooltip("How fast affection is applied")]
     [Range(0, 10f)]
     [SerializeField]
-    float _speed = 0.1f;
-    public float Speed
+    float _affectionSpeed = 0.1f;
+    public float AffectionSpeed
     {
-        get { return _speed; }
+        get { return _affectionSpeed; }
         set
         {
-            _speed = value;
+            _affectionSpeed = value;
             OnValidate();
         }
     }

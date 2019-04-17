@@ -97,7 +97,7 @@ public class TimeControlAffectionReceiver : AffectionReceiver
             _timeScaleAffectionFromApplicatorCache = ((TimeControlAffectionDefinition)AffectionFromApplicator).TimeScale;
             _timeScaleTarget = _timeScaleAffectionCache * _timeScaleAffectionFromApplicatorCache.Value;
 
-            _affectionMax = ((TimeControlAffectionDefinition)AffectionFromApplicator).Speed;
+            _affectionMax = ((TimeControlAffectionDefinition)AffectionFromApplicator).AffectionSpeed;
         }
         else
         {
