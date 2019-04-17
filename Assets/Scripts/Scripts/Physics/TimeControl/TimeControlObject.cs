@@ -46,7 +46,7 @@ public class TimeControlObject : MonoBehaviour
         }
     }
 
-    public TimeControlObject()
+    private void Awake()
     {
         Elements = new TimeControlElements[TimeControlController.Instance.ElementsSize];
     }
