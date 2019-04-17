@@ -52,6 +52,8 @@ public class TimeControlAffectionReceiver : AffectionReceiver
     {
         get
         {
+            UpdateCache();
+
             if (_timeScaleCache < 0)
             {
                 //Anything that is slower than 0 is reversed and should be using Reverse logic, freeze actual logic for this object instead
@@ -65,19 +67,10 @@ public class TimeControlAffectionReceiver : AffectionReceiver
         }
     }
 
-    public float TimeScaleDeltaRaw
+    private float TimeScaleDeltaRaw
     {
         get
         {
-            if(_affectionCounter < 1.0f)
-            {
-                _affectionCounter += Time.deltaTime * _affectionSpeed;
-
-                // update time scale value to match
-                _timeScaleCache = Mathf.SmoothStep(_timeScaleCache, _timeScaleTarget, _affectionCounter );
-            }
-            //else we reached the target
-
             return _timeScaleCache * Time.deltaTime;
         }
     }
@@ -124,5 +117,17 @@ public class TimeControlAffectionReceiver : AffectionReceiver
         {
             _affectionSpeed = 1.0f / _affectionMax;
         }
+    }
+
+    private void UpdateCache()
+    {
+        if (_affectionCounter < 1.0f)
+        {
+            _affectionCounter += Time.deltaTime * _affectionSpeed;
+
+            // update time scale value to match
+            _timeScaleCache = Mathf.SmoothStep(_timeScaleCache, _timeScaleTarget, _affectionCounter);
+        }
+        //else we reached the target
     }
 }
