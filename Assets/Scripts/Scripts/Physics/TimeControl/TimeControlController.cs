@@ -8,7 +8,7 @@ using UnityEngine.Events;
 /// Time control controller is used to control time of individual time control objects
 /// </summary>
 [Serializable]
-public class TimeControlController : MonoBehaviour
+public class TimeControlController : SingletonInstance<TimeControlController>
 {
     [Header("Settings")]
 
@@ -40,6 +40,21 @@ public class TimeControlController : MonoBehaviour
     {
         get { return _timeScale; }
     }
+
+
+    //Debug
+
+    [Header("Debug")]
+
+    [Tooltip("Shows control objects")]
+    public bool DebugShowControlObjects;
+
+    [Tooltip("Shows control objects full path")]
+    public bool DebugShowControlObjectsFullPath;
+
+    [Tooltip("For how long to show the game objects")]
+    public float DebugShowControlObjectsTime = 10f;
+
 
 
     /// <summary>
@@ -82,27 +97,20 @@ public class TimeControlController : MonoBehaviour
     [Tooltip("References to all time control object, for entire scene")]
     public HashSet<TimeControlObject> TimeControlObjects = new HashSet<TimeControlObject>();
 
-    //Public instance to time controller
-    public static TimeControlController Instance = null;
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
+
         if (Override != null)
         {
             Override.AffectionChanged += OnTimeScaleChanged;
         }
 
-        //Create instance
-        if (Instance == null)
-        {
-            ElementsSize = SettingsController.Instance.GetValue<int>(TIME_CONTROL_ELEMENTS_SIZE_NAME);
-            ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        //Create initial objects
+
+        ElementsSize = SettingsController.Instance.GetValue<int>(TIME_CONTROL_ELEMENTS_SIZE_NAME);
+        ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
     }
 
     private void OnDestroy()

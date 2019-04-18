@@ -60,16 +60,19 @@ public class TimeControlObject : MonoBehaviour
 
     private void OnDestroy()
     {
-        TimeControlController.Instance.UnRegister(this);
+        if( TimeControlController.Instance != null )
+        {
+            TimeControlController.Instance.UnRegister(this);
+        }
     }
 
     private void DebugDrawPositions()
     {
-        if (GameController.Instance.DebugShowControlObjects)
+        if (TimeControlController.Instance.DebugShowControlObjects)
         {
             var divider = 1.0f / Elements.Length;
 
-            if( GameController.Instance.DebugShowControlObjectsFullPath )
+            if(TimeControlController.Instance.DebugShowControlObjectsFullPath )
             {
                 var v1 = LastElementActual.Position;
                 var v2 = LastElementActual.Position;
@@ -92,7 +95,7 @@ public class TimeControlObject : MonoBehaviour
                         v1,
                         v2,
                         new Color(0, divider * cntr, 0),
-                        GameController.Instance.DebugShowControlObjectsTime);
+                        TimeControlController.Instance.DebugShowControlObjectsTime);
 
                     v1 = v2;
                 }
@@ -109,7 +112,7 @@ public class TimeControlObject : MonoBehaviour
                     v1,
                     v2,
                     new Color(0, value, 0),
-                    GameController.Instance.DebugShowControlObjectsTime);
+                    TimeControlController.Instance.DebugShowControlObjectsTime);
             }
         }
     }
