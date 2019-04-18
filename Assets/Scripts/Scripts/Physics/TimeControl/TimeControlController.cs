@@ -113,9 +113,11 @@ public class TimeControlController : SingletonInstance<TimeControlController>
         ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
     }
 
-    private void OnDestroy()
+    public override void OnDestroy()
     {
-        if( Override != null )
+        base.OnDestroy();
+
+        if ( Override != null )
         {
             Override.AffectionChanged -= OnTimeScaleChanged;
         }

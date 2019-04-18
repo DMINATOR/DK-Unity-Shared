@@ -61,8 +61,13 @@ public class MoveOnKey : MonoBehaviour
         {
             var rotationQ = transform.rotation * Quaternion.Euler(Vector3.up * rotation);
 
-            transform.position = transform.position + transform.rotation * vector;
-            transform.rotation = rotationQ;
+            OnPositionChange(transform.position + transform.rotation * vector, rotationQ);
         }
+    }
+
+    protected virtual void OnPositionChange(Vector3 position, Quaternion rotation)
+    {
+        transform.position = position;
+        transform.rotation = rotation;
     }
 }

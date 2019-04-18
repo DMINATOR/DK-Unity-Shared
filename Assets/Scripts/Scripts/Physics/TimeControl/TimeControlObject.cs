@@ -60,7 +60,7 @@ public class TimeControlObject : MonoBehaviour
 
     private void OnDestroy()
     {
-        if( TimeControlController.Instance != null )
+        if( !TimeControlController.Destroyed )
         {
             TimeControlController.Instance.UnRegister(this);
         }

@@ -6,11 +6,18 @@ using UnityEngine;
 
 public class SingletonInstance<T> : MonoBehaviour where T : Component
 {
+    public static bool Destroyed { get; set; }
+
     private static T _instance;
     public static T Instance
     {
         get
         {
+            if (Destroyed)
+            {
+                throw new System.Exception("Should not call destroyed Singleton instance!");
+            }
+            else
             if (_instance == null)
             {
                 _instance = FindObjectOfType<T>();
@@ -23,6 +30,11 @@ public class SingletonInstance<T> : MonoBehaviour where T : Component
             }
             return _instance;
         }
+    }
+
+    public virtual void OnDestroy()
+    {
+        Destroyed = true;
     }
 
     public virtual void Awake()
@@ -43,11 +55,18 @@ public class SingletonInstance<T> : MonoBehaviour where T : Component
 
 public class SingletonInstanceDontDestroy<T> : MonoBehaviour where T : Component
 {
+    public static bool Destroyed { get; set; }
+
     private static T _instance;
     public static T Instance
     {
         get
         {
+            if( Destroyed )
+            {
+                throw new System.Exception("Should not call destroyed Singleton instance!");
+            }
+            else
             if (_instance == null)
             {
                 _instance = FindObjectOfType<T>();
@@ -60,6 +79,11 @@ public class SingletonInstanceDontDestroy<T> : MonoBehaviour where T : Component
             }
             return _instance;
         }
+    }
+
+    public virtual void OnDestroy()
+    {
+        Destroyed = true;
     }
 
     public virtual void Awake()
