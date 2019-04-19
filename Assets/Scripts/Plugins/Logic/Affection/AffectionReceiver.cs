@@ -13,6 +13,7 @@ public class AffectionReceiver : MonoBehaviour
     public AffectionDefinitionBase Affection;
 
     [Tooltip("Current affection applied to this receiver from Applicator, to override default behavior")]
+    [ReadOnly]
     public AffectionDefinitionBase AffectionFromApplicator;
 
     public delegate void AffectionChangedHandler();
