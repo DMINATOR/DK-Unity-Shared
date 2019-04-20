@@ -28,6 +28,7 @@ public class TimeControlSpeedScaler: MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Position = DefaultPosition;
         //apply default scaling options on start
         OnPositionChange();
     }

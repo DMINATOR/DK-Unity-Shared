@@ -20,6 +20,39 @@ public class TimeControlTimeScale
         }
     }
 
+    //Name of the affection that is currently applied
+    public string AffectionName
+    {
+        get
+        {
+            if (_receiver != null)
+            {
+                return _receiver.Affection.Name;
+            }
+            else
+            {
+                return "Default"; //No affection, default is applied
+            }
+        }
+    }
+
+
+    //Current Time Scale value of this affection
+    public float AffectionTimeScale
+    {
+        get
+        {
+            if (_receiver != null)
+            {
+                return ((TimeControlAffectionDefinition)_receiver.Affection).TimeScale;
+            }
+            else
+            {
+                return TimeControlController.Instance.TimeScale;
+            }
+        }
+    }
+
     /// <summary>
     /// Retrieves current time scale delta value
     /// </summary>
