@@ -88,6 +88,10 @@ public class TimeControlAffectionReceiver : AffectionReceiver
         {
             _timeScaleCache = _timeScaleTarget;
         }
+        else
+        {
+            _affectionDuration *= 2.0f; //this is to fix possible issue
+        }
     }
 
     private float CalculateCache()
