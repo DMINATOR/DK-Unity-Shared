@@ -43,6 +43,8 @@ public class MoveRandomly : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        TimeScaleInstance.Update();
+
         this.transform.Translate(
                 CurrentDirection.x * TimeScaleInstance.TimeScaleDelta,
                 CurrentDirection.y * TimeScaleInstance.TimeScaleDelta,

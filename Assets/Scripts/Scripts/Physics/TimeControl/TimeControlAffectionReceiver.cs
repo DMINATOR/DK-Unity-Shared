@@ -8,43 +8,6 @@ public class TimeControlAffectionReceiver : AffectionReceiver
 
     //Exposed to other classes
 
-    //Internal
-
-    [Tooltip("Current cached time scale value")]
-    [SerializeField]
-    [ReadOnly]
-    private float _timeScaleCache;
-
-    [Tooltip("Cached time from affection")]
-    [SerializeField]
-    [ReadOnly]
-    private float _timeScaleAffectionCache;
-
-    [Tooltip("Cached time from affection from Applicator. Only if affected from applicator")]
-    [SerializeField]
-    [ReadOnly]
-    private float? _timeScaleAffectionFromApplicatorCache;
-
-    [Tooltip("Target time scale value")]
-    [SerializeField]
-    [ReadOnly]
-    private float _timeScaleTarget;
-
-    [Tooltip("Affection speed")]
-    [SerializeField]
-    [ReadOnly]
-    private float _affectionSpeed;
-
-    [Tooltip("Affection max scaled value")]
-    [SerializeField]
-    [ReadOnly]
-    private float _affectionMax;
-
-    [Tooltip("Current affection counter (in real time) seconds")]
-    [SerializeField]
-    [ReadOnly]
-    private float _affectionCounter;
-
     /// <summary>
     /// Current Time scale multipled by delta, always positive
     /// </summary>
@@ -52,8 +15,6 @@ public class TimeControlAffectionReceiver : AffectionReceiver
     {
         get
         {
-            UpdateCache();
-
             if (_timeScaleCache < 0)
             {
                 //Anything that is slower than 0 is reversed and should be using Reverse logic, freeze actual logic for this object instead
@@ -75,59 +36,77 @@ public class TimeControlAffectionReceiver : AffectionReceiver
         }
     }
 
+    //Internal
+
+    [Tooltip("Current cached time scale value")]
+    [SerializeField]
+    [ReadOnly]
+    private float _timeScaleCache;
+
+    [Tooltip("Target time scale value")]
+    [SerializeField]
+    [ReadOnly]
+    private float _timeScaleTarget;
+
+    [Tooltip("Affection speed")]
+    [SerializeField]
+    [ReadOnly]
+    private float _affectionDuration;
+
+    [Tooltip("Current affection counter (in real time) seconds")]
+    [SerializeField]
+    [ReadOnly]
+    private float _affectionCounter;
+
+
     public override void OnStart()
     {
         base.OnStart();
 
         //initial values should be set right away
         _timeScaleCache = _timeScaleTarget;
-        _affectionCounter = _affectionSpeed;
     }
 
     public override void OnAffectionChanged()
     {
-        base.OnAffectionChanged();
+        var affection = ((TimeControlAffectionDefinition)Affection);
+        var affectionFromApplicator = ((TimeControlAffectionDefinition)AffectionFromApplicator);
 
         _affectionCounter = 0.0f;
-        _timeScaleAffectionCache = ((TimeControlAffectionDefinition)Affection).TimeScale;
 
-        //if another affection is applied, multiply by
-        if( AffectionFromApplicator != null )
+        //recalculate new target value
+        _timeScaleTarget = affection.TimeScale;
+        _affectionDuration = affection.AffectionSpeed;
+
+        if (AffectionFromApplicator != null)
         {
-            _timeScaleAffectionFromApplicatorCache = ((TimeControlAffectionDefinition)AffectionFromApplicator).TimeScale;
-            _timeScaleTarget = _timeScaleAffectionCache * _timeScaleAffectionFromApplicatorCache.Value;
-
-            _affectionMax = ((TimeControlAffectionDefinition)AffectionFromApplicator).AffectionSpeed;
-        }
-        else
-        {
-            _timeScaleAffectionFromApplicatorCache = null;
-
-            _timeScaleTarget = _timeScaleAffectionCache;
+            _timeScaleTarget = (_timeScaleTarget + affectionFromApplicator.TimeScale) / 2.0f;
+            _affectionDuration = (_affectionDuration + affectionFromApplicator.AffectionSpeed) / 2.0f;
         }
 
-        //Apply instantly if it's configured
-        if (_affectionMax == 0.0f)
+        if( _affectionDuration == 0.0f )
         {
-            //should be instant
             _timeScaleCache = _timeScaleTarget;
-            _affectionCounter = _affectionSpeed;
-        }
-        else
-        {
-            _affectionSpeed = 1.0f / _affectionMax;
         }
     }
 
-    private void UpdateCache()
+    private float CalculateCache()
     {
-        if (_affectionCounter < 1.0f)
+        if (_timeScaleCache != _timeScaleTarget)
         {
-            _affectionCounter += Time.deltaTime * _affectionSpeed;
+            _affectionCounter += Time.deltaTime;
 
-            // update time scale value to match
-            _timeScaleCache = Mathf.SmoothStep(_timeScaleCache, _timeScaleTarget, _affectionCounter);
+            return Mathf.SmoothStep(_timeScaleCache, _timeScaleTarget, _affectionCounter / _affectionDuration);
         }
-        //else we reached the target
+        else
+            return _timeScaleCache;
+    }
+
+    private void Update()
+    {
+        if (_timeScaleCache != _timeScaleTarget)
+        {
+            _timeScaleCache = CalculateCache();
+        }
     }
 }
