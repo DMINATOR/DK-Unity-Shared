@@ -97,20 +97,18 @@ public class TimeControlController : SingletonInstance<TimeControlController>
     [Tooltip("References to all time control object, for entire scene")]
     public HashSet<TimeControlObject> TimeControlObjects = new HashSet<TimeControlObject>();
 
-
-    public override void Awake()
+    public override void OnCreated()
     {
-        base.Awake();
+        base.OnCreated();
+
+        //Create initial objects
+        ElementsSize = SettingsController.Instance.GetValue<int>(TIME_CONTROL_ELEMENTS_SIZE_NAME);
+        ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
 
         if (Override != null)
         {
             Override.AffectionChanged += OnTimeScaleChanged;
         }
-
-        //Create initial objects
-
-        ElementsSize = SettingsController.Instance.GetValue<int>(TIME_CONTROL_ELEMENTS_SIZE_NAME);
-        ThresholdChangeDifference = SettingsController.Instance.GetValue<float>(TIME_CONTROL_CHANGE_DIFFERENCE);
     }
 
     public override void OnDestroy()
