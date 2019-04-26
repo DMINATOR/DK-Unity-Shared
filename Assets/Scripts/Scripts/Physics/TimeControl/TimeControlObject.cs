@@ -14,7 +14,7 @@ public struct TimeControlElements
 }
 
 
-public class TimeControlObject : MonoBehaviour
+public class TimeControlObject : MonoBehaviour, ITranslationWrapper
 {
     [Tooltip("Current index within Elements")]
     [SerializeField]
@@ -158,7 +158,7 @@ public class TimeControlObject : MonoBehaviour
         RememberPosition(CurrentPosition);
     }
 
-    public void LogAndTranslateTo(Vector3 position, Quaternion rotation)
+    public void RotateAndPosition(Vector3 position, Quaternion rotation)
     {
         //Apply transform
         transform.position = position;

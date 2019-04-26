@@ -28,6 +28,9 @@ public class MoveRandomly : MonoBehaviour
     //Invoker used to generate new direction vector when changes happen
     private TimeControlInvoker _invoker;
 
+    //Wrapper for object translation
+    private TranslationWrapper _translation;
+
     private void Awake()
     {
         _invoker = new TimeControlInvoker(this);
@@ -36,6 +39,7 @@ public class MoveRandomly : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _translation = new TranslationWrapper(this);
         TimeScaleInstance = TimeControlController.Instance.CreateTimeScaleInstance(this);
         OnInvokerTrigger();
     }
@@ -45,11 +49,17 @@ public class MoveRandomly : MonoBehaviour
     {
         TimeScaleInstance.Update();
 
-        this.transform.Translate(
-                CurrentDirection.x * TimeScaleInstance.TimeScaleDelta,
-                CurrentDirection.y * TimeScaleInstance.TimeScaleDelta,
-                CurrentDirection.z * TimeScaleInstance.TimeScaleDelta
-            );
+        _translation.Translate(
+              CurrentDirection.x * TimeScaleInstance.TimeScaleDelta,
+              CurrentDirection.y * TimeScaleInstance.TimeScaleDelta,
+              CurrentDirection.z * TimeScaleInstance.TimeScaleDelta
+          );
+
+        //this.transform.Translate(
+        //        CurrentDirection.x * TimeScaleInstance.TimeScaleDelta,
+        //        CurrentDirection.y * TimeScaleInstance.TimeScaleDelta,
+        //        CurrentDirection.z * TimeScaleInstance.TimeScaleDelta
+        //    );
         
         _invoker.Update();
     }
