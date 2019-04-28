@@ -20,13 +20,17 @@ public class TimeControlObject : MonoBehaviour, ITranslationWrapper
     [SerializeField]
     private int CurrentPosition;
 
-    [Tooltip("Time control records (deltas)")]
-    [SerializeField]
-    private TimeControlElements[] Elements;
-
     [Tooltip("Last actual position and rotation")]
     [SerializeField]
     TimeControlElements LastElementActual;
+
+    [Tooltip("Current Time Scale Instance assigned for this object")]
+    [SerializeField]
+    private TimeControlTimeScale _instance;
+
+    [Tooltip("Time control records (deltas)")]
+    [SerializeField]
+    private TimeControlElements[] Elements;
 
     /// <summary>
     /// Previous position for the last object
@@ -53,17 +57,23 @@ public class TimeControlObject : MonoBehaviour, ITranslationWrapper
 
     private void Start()
     {
-        TimeControlController.Instance.Register(this);
+        _instance = TimeControlController.Instance.CreateTimeScaleInstance(this);
+        //TimeControlController.Instance.Register(this);
 
         RememberPosition(0);
     }
 
     private void OnDestroy()
     {
-        if( !TimeControlController.Destroyed )
-        {
-            TimeControlController.Instance.UnRegister(this);
-        }
+        //if( !TimeControlController.Destroyed )
+        //{
+        //    TimeControlController.Instance.UnRegister(this);
+        //}
+    }
+
+    private void Update()
+    {
+        _instance.Update();
     }
 
     private void DebugDrawPositions()
@@ -122,7 +132,7 @@ public class TimeControlObject : MonoBehaviour, ITranslationWrapper
         //Record changes (deltas against current values)
         Elements[index].Position = transform.position - LastElementActual.Position;
         Elements[index].Rotation = LastElementActual.Rotation * Quaternion.Inverse(transform.rotation);
-        Elements[index].DeltaTime = Time.realtimeSinceStartup;
+        Elements[index].DeltaTime = _instance.CurrentTime;
 
         //remember new position and rotation
         LastElementActual.Position = transform.position;
