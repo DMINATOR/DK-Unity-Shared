@@ -153,7 +153,7 @@ public class TimeControlObject : MonoBehaviour, ITranslationWrapper
         }
     }
 
-    public void LogAndTranslateToPointInstantly(Vector3 position, Quaternion rotation)
+    public void RotateAndPositionInstant(Vector3 position, Quaternion rotation)
     {
         //Apply transform
         transform.position = position;

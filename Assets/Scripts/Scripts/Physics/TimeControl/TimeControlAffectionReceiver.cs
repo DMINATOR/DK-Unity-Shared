@@ -28,7 +28,10 @@ public class TimeControlAffectionReceiver : AffectionReceiver
         }
     }
 
-    private float TimeScaleDeltaRaw
+    /// <summary>
+    /// Current time scale values multipled by delta, can go negative
+    /// </summary>
+    public float TimeScaleDeltaRaw
     {
         get
         {

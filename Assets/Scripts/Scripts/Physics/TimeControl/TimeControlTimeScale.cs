@@ -12,6 +12,10 @@ public class TimeControlTimeScale
     [Tooltip("Current time, scaled by effective time scale at the moment")]
     [SerializeField]
     private float _currentTime;
+
+    /// <summary>
+    /// Current time affected by time scale, can never go negative
+    /// </summary>
     public float CurrentTime
     {
         get
@@ -54,7 +58,7 @@ public class TimeControlTimeScale
     }
 
     /// <summary>
-    /// Retrieves current time scale delta value
+    /// Retrieves current time scale delta value. Always positive
     /// </summary>
     private float _timeScaleDelta;
     public float TimeScaleDelta
@@ -75,6 +79,30 @@ public class TimeControlTimeScale
         }
     }
 
+
+
+    /// <summary>
+    /// Retrieves current time scale delta value. Can be negative
+    /// </summary>
+    private float _timeScaleDeltaRaw;
+    public float TimeScaleDeltaRaw
+    {
+        get
+        {
+            if (_receiver != null)
+            {
+                //Receive time scale from the receiver
+                _timeScaleDeltaRaw = _receiver.TimeScaleDeltaRaw;
+            }
+            else
+            {
+                //No custom receivers specified - revert to default
+                _timeScaleDeltaRaw = TimeControlController.Instance.TimeScaleDeltaRaw;
+            }
+            return _timeScaleDeltaRaw;
+        }
+    }
+
     public TimeControlTimeScale(TimeControlAffectionReceiver receiver)
     {
         _receiver = receiver;
@@ -85,7 +113,9 @@ public class TimeControlTimeScale
     /// </summary>
     public void Update()
     {
-        _currentTime += TimeScaleDelta;
+        var newTime = _currentTime + TimeScaleDeltaRaw;
+
+        _currentTime = Mathf.Max(0.0f, newTime);
     }
 
     /// <summary>

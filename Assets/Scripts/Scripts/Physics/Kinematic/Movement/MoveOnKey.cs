@@ -28,8 +28,12 @@ public class MoveOnKey : MonoBehaviour
     [SerializeField]
     private TimeControlTimeScale _instance;
 
+    //Wrapper for object translation
+    protected TranslationWrapper _translation;
+
     void Start()
     {
+        _translation = new TranslationWrapper(this);
         _instance = TimeControlController.Instance.CreateTimeScaleInstance(this);
     }
 
@@ -67,7 +71,6 @@ public class MoveOnKey : MonoBehaviour
 
     protected virtual void OnPositionChange(Vector3 position, Quaternion rotation)
     {
-        transform.position = position;
-        transform.rotation = rotation;
+        _translation.RotateAndPosition(position, rotation);
     }
 }

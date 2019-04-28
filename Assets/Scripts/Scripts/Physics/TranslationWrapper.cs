@@ -48,6 +48,19 @@ public class TranslationWrapper
         }
     }
 
+    public void RotateAndPositionInstant(Vector3 position, Quaternion rotation)
+    {
+        if (_target != null)
+        {
+            _target.RotateAndPositionInstant(position, rotation);
+        }
+        else
+        {
+            _behavior.transform.position = position;
+            _behavior.transform.rotation = rotation;
+        }
+    }
+
     public void RotateAndPosition(Vector3 position, Quaternion rotation)
     {
         if (_target != null)
@@ -65,4 +78,6 @@ public class TranslationWrapper
 public interface ITranslationWrapper
 { 
     void RotateAndPosition(Vector3 position, Quaternion rotation);
+
+    void RotateAndPositionInstant(Vector3 position, Quaternion rotation);
 }
