@@ -31,6 +31,10 @@ public class MoveBetweenPoints : MonoBehaviour
     [SerializeField]
     private TimeControlTimeScale TimeScaleInstance;
 
+    [Tooltip("Current Time counter")]
+    [SerializeField]
+    private float Counter = 0.0f;
+
     //Exposed to other classes
 
     //Internal
@@ -57,7 +61,8 @@ public class MoveBetweenPoints : MonoBehaviour
         if (Speed != 0)
         {
             TimeScaleInstance.Update();
-            float distCovered = TimeScaleInstance.CurrentTime * Speed;
+            Counter += TimeScaleInstance.TimeScaleDelta;
+            float distCovered = Counter * Speed;
 
             float fracJourney = (distCovered / _length);
 
@@ -86,7 +91,7 @@ public class MoveBetweenPoints : MonoBehaviour
 
     public void SetStartEnd(Vector3 start, Vector3 end)
     {
-        TimeScaleInstance.ResetCurrentTime();
+        Counter = 0.0f;
 
         _startPosition = start;
         _targetPosition = end;
