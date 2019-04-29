@@ -95,7 +95,7 @@ public class TimeControlController : SingletonInstance<TimeControlController>
 
 
     [Tooltip("References to all time control object, for entire scene")]
-    public HashSet<TimeControlObject> TimeControlObjects = new HashSet<TimeControlObject>();
+    public HashSet<TimeControlReverse> TimeControlObjects = new HashSet<TimeControlReverse>();
 
     public override void OnCreated()
     {
@@ -130,12 +130,12 @@ public class TimeControlController : SingletonInstance<TimeControlController>
         return timeScale;
     }
 
-    public void Register(TimeControlObject obj)
+    public void Register(TimeControlReverse obj)
     {
         TimeControlObjects.Add(obj);
     }
 
-    public void UnRegister(TimeControlObject obj)
+    public void UnRegister(TimeControlReverse obj)
     {
         TimeControlObjects.Remove(obj);
     }

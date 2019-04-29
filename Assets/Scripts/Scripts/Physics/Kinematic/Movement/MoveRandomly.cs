@@ -54,12 +54,6 @@ public class MoveRandomly : MonoBehaviour
               CurrentDirection.y * TimeScaleInstance.TimeScaleDelta,
               CurrentDirection.z * TimeScaleInstance.TimeScaleDelta
           );
-
-        //this.transform.Translate(
-        //        CurrentDirection.x * TimeScaleInstance.TimeScaleDelta,
-        //        CurrentDirection.y * TimeScaleInstance.TimeScaleDelta,
-        //        CurrentDirection.z * TimeScaleInstance.TimeScaleDelta
-        //    );
         
         _invoker.Update();
     }
