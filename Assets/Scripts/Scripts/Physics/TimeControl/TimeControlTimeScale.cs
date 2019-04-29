@@ -57,6 +57,22 @@ public class TimeControlTimeScale
         }
     }
 
+    //Current time scale value with easing applied
+    public float TimeScale
+    {
+        get
+        {
+            if (_receiver != null)
+            {
+                return _receiver.TimeScale;
+            }
+            else
+            {
+                return TimeControlController.Instance.TimeScale;
+            }
+        }
+    }
+
     /// <summary>
     /// Retrieves current time scale delta value. Always positive
     /// </summary>

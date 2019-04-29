@@ -9,6 +9,18 @@ public class TimeControlAffectionReceiver : AffectionReceiver
     //Exposed to other classes
 
     /// <summary>
+    /// Current time scale value with easing applied
+    /// </summary>
+    public float TimeScale
+    {
+        get
+        {
+            return _timeScaleCache;
+        }
+    }
+
+
+    /// <summary>
     /// Current Time scale multipled by delta, always positive
     /// </summary>
     public float TimeScaleDelta

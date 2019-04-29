@@ -21,6 +21,14 @@ public struct TimeControlElementActual
     public Quaternion Rotation;
 }
 
+public struct TimeControlElementReverse
+{
+    public float Time;
+
+    public Vector3 Position;
+    public Quaternion Rotation;
+}
+
 /// <summary>
 /// Records object position and state, reverses them back if time scale changes to negative
 /// </summary>
@@ -33,6 +41,14 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
     [Tooltip("Last actual position and rotation")]
     [SerializeField]
     TimeControlElementActual LastElementActual;
+
+    [Tooltip("Start point of reverse")]
+    [SerializeField]
+    TimeControlElementReverse TimeReverseStart;
+
+    [Tooltip("End point of reverse")]
+    [SerializeField]
+    TimeControlElementReverse TimeReverseEnd;
 
     [Tooltip("Last time when scaling was positive")]
     [SerializeField]
@@ -80,26 +96,116 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
     {
         _instance.Update();
 
-        if( _instance.AffectionTimeScale < 0.0f )
+        if (_instance.TimeScale < 0.0f)
         {
-            ReverseToPreviousElementIfNeeded();
-
-            if ( LastElementActual.Element.Time > 0.0f )
+            if( LastPositiveTime > 0.0f )
             {
-                var mult = LastPositiveTime - LastElementActual.Element.Time;
-                var journey = (_instance.CurrentTime - LastPositiveTime) / mult;
-
-                //calculate and move position of current object
-                transform.position = Vector3.Lerp(LastElementActual.Position, transform.position, journey);
-                transform.rotation = Quaternion.Lerp(LastElementActual.Rotation, transform.rotation, journey);
+                //first time in reverse, create initial starting and ending points
+                StartReverse(LastPositiveTime);
+                LastPositiveTime = 0.0f;
             }
-            //else - can't reverse back anymore as there is nowhere to go
+            //else we are probably iterating between points right now
+
+            ScaleToPreviousElement();
+
+            //if( LastPositiveTime > 0.0f )
+            //{
+            //    //create new point to reverse to
+            //    ElementToReverseTo.Time = LastPositiveTime;
+            //    ElementToReverseTo.Position = LastElementActual.Position;
+            //    ElementToReverseTo.Rotation = LastElementActual.Rotation;
+            //    LastPositiveTime = 0.0f;
+            //}
+
+            //ScaleToPreviousElement();
         }
         else
         {
             //remember time when we had last positive value, use it to scale back
             LastPositiveTime = _instance.CurrentTime; 
         }
+    }
+
+    private void StartReverse(float lastTime)
+    {
+        Log.Instance.Info("TimeControl", "Reverse started!");
+
+        //Start point
+        TimeReverseStart.Time = lastTime;
+        TimeReverseStart.Position = transform.position;
+        TimeReverseStart.Rotation = transform.rotation;
+
+        //End point - take last available item
+        TimeReverseEnd.Time = LastElementActual.Element.Time;
+        TimeReverseEnd.Position = LastElementActual.Position;
+        TimeReverseEnd.Rotation = LastElementActual.Rotation;
+    }
+
+    private void StopReverse()
+    {
+        Log.Instance.Info("TimeControl", "Reverse ended!");
+
+        CurrentPosition = 0;
+
+        //Start point
+        TimeReverseStart.Time = 0.0f;
+        TimeReverseStart.Position = Vector3.zero;
+        TimeReverseStart.Rotation = Quaternion.identity;
+
+        //End point - take last available item
+        TimeReverseEnd.Time = 0.0f;
+        TimeReverseEnd.Position = Vector3.zero;
+        TimeReverseEnd.Rotation = Quaternion.identity;
+    }
+
+    private void ScaleToPreviousElement()
+    {
+        if( TimeReverseStart.Time == 0.0f && TimeReverseEnd.Time == 0.0f )
+        {
+            // Nothing to reverse we closed the gap
+        }
+        else
+        {
+            //continue reversing
+            var mult = TimeReverseStart.Time - TimeReverseEnd.Time;
+            var journey = (TimeReverseStart.Time - _instance.CurrentTime) / mult;
+
+            Log.Instance.Info("TimeControl", $" [{CurrentPosition}] timeScale = {_instance.TimeScale} currentTime = {_instance.CurrentTime} startT = {TimeReverseStart.Time} endT = {TimeReverseEnd.Time} mult = {mult} journey = {journey}");
+
+            Log.Instance.Info("TimeControl", $" [{CurrentPosition}] before: ({transform.position.x},{transform.position.y},{transform.position.z})");
+
+            //calculate and move position of current object
+            transform.position = Vector3.Lerp(TimeReverseStart.Position, TimeReverseEnd.Position, journey);
+            transform.rotation = Quaternion.Lerp(TimeReverseStart.Rotation, TimeReverseEnd.Rotation, journey);
+
+            Log.Instance.Info("TimeControl", $" [{CurrentPosition}] after: ({transform.position.x},{transform.position.y},{transform.position.z})");
+
+            //try to reverse forward
+            ReverseToPreviousElementIfNeeded();
+        }
+
+
+
+        //if (LastElementActual.Element.Time > 0.0f)
+        //{
+        //    var mult = LastPositiveTime - LastElementActual.Element.Time;
+        //    var journey = (LastPositiveTime - _instance.CurrentTime) / mult;
+
+        //    Log.Instance.Info("TimeControl", $" [{CurrentPosition}] timeScale = {_instance.TimeScale} currentTime = {_instance.CurrentTime} lastPositive = {LastPositiveTime} lastActual = {LastElementActual.Element.Time} mult = {mult} journey = {journey}");
+
+        //    Log.Instance.Info("TimeControl", $" [{CurrentPosition}] before: ({transform.position.x},{transform.position.y},{transform.position.z})");
+
+        //    //calculate and move position of current object
+        //    transform.position = Vector3.Lerp(LastElementActual.Position, transform.position, journey);
+        //    transform.rotation = Quaternion.Lerp(LastElementActual.Rotation, transform.rotation, journey);
+
+        //    Log.Instance.Info("TimeControl", $" [{CurrentPosition}] after: ({transform.position.x},{transform.position.y},{transform.position.z})");
+        //}
+        //else
+        //{
+        //    //else - can't reverse back anymore as there is nowhere to go
+        //    CurrentPosition = 0;
+        //}
     }
 
     /// <summary>
@@ -123,6 +229,7 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
             }
             else
             {
+                StopReverse();
                 return;
             }
         }
@@ -181,7 +288,12 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
 
     private void ReverseOneElement()
     {
-        LastPositiveTime = LastElementActual.Element.Time;
+        //Remember start point
+        TimeReverseStart.Time = LastElementActual.Element.Time;
+        TimeReverseStart.Position = LastElementActual.Position;
+        TimeReverseStart.Rotation = LastElementActual.Rotation;
+
+        Log.Instance.Info("TimeControl", $"{CurrentPosition} -> {PreviousPosition}");
 
         //cleanup this element so it can't be used anymore
         LastElementActual.Element.Time = 0.0f;
@@ -193,6 +305,11 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
         LastElementActual.Element.Time = Elements[CurrentPosition].Time;
         LastElementActual.Position = transform.position - Elements[CurrentPosition].DeltaPosition;
         LastElementActual.Rotation = Elements[CurrentPosition].DeltaRotation * Quaternion.Inverse(transform.rotation);
+
+        //End point - save new endpoint
+        TimeReverseEnd.Time = LastElementActual.Element.Time;
+        TimeReverseEnd.Position = LastElementActual.Position;
+        TimeReverseEnd.Rotation = LastElementActual.Rotation;
     }
 
     private void RememberPosition(int index)
@@ -240,7 +357,7 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
 
     public void RotateAndPosition(Vector3 position, Quaternion rotation)
     {
-        if( _instance.AffectionTimeScale > 0.0f )
+        if( _instance.TimeScale > 0.0f )
         {
             //Apply transform
             transform.position = position;
