@@ -89,7 +89,9 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
     {
         _instance = TimeControlController.Instance.CreateTimeScaleInstance(this);
 
-        RememberPosition(0);
+        RotateAndPositionInstant(transform.position, transform.rotation);
+
+        //RememberPosition(0);
     }
 
     private void Update()
@@ -107,17 +109,6 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
             //else we are probably iterating between points right now
 
             ScaleToPreviousElement();
-
-            //if( LastPositiveTime > 0.0f )
-            //{
-            //    //create new point to reverse to
-            //    ElementToReverseTo.Time = LastPositiveTime;
-            //    ElementToReverseTo.Position = LastElementActual.Position;
-            //    ElementToReverseTo.Rotation = LastElementActual.Rotation;
-            //    LastPositiveTime = 0.0f;
-            //}
-
-            //ScaleToPreviousElement();
         }
         else
         {
@@ -149,13 +140,9 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
 
         //Start point
         TimeReverseStart.Time = 0.0f;
-        TimeReverseStart.Position = Vector3.zero;
-        TimeReverseStart.Rotation = Quaternion.identity;
 
         //End point - take last available item
         TimeReverseEnd.Time = 0.0f;
-        TimeReverseEnd.Position = Vector3.zero;
-        TimeReverseEnd.Rotation = Quaternion.identity;
     }
 
     private void ScaleToPreviousElement()
@@ -183,29 +170,6 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
             //try to reverse forward
             ReverseToPreviousElementIfNeeded();
         }
-
-
-
-        //if (LastElementActual.Element.Time > 0.0f)
-        //{
-        //    var mult = LastPositiveTime - LastElementActual.Element.Time;
-        //    var journey = (LastPositiveTime - _instance.CurrentTime) / mult;
-
-        //    Log.Instance.Info("TimeControl", $" [{CurrentPosition}] timeScale = {_instance.TimeScale} currentTime = {_instance.CurrentTime} lastPositive = {LastPositiveTime} lastActual = {LastElementActual.Element.Time} mult = {mult} journey = {journey}");
-
-        //    Log.Instance.Info("TimeControl", $" [{CurrentPosition}] before: ({transform.position.x},{transform.position.y},{transform.position.z})");
-
-        //    //calculate and move position of current object
-        //    transform.position = Vector3.Lerp(LastElementActual.Position, transform.position, journey);
-        //    transform.rotation = Quaternion.Lerp(LastElementActual.Rotation, transform.rotation, journey);
-
-        //    Log.Instance.Info("TimeControl", $" [{CurrentPosition}] after: ({transform.position.x},{transform.position.y},{transform.position.z})");
-        //}
-        //else
-        //{
-        //    //else - can't reverse back anymore as there is nowhere to go
-        //    CurrentPosition = 0;
-        //}
     }
 
     /// <summary>
@@ -295,8 +259,9 @@ public class TimeControlReverse : MonoBehaviour, ITranslationWrapper
 
         Log.Instance.Info("TimeControl", $"{CurrentPosition} -> {PreviousPosition}");
 
-        //cleanup this element so it can't be used anymore
+        //cleanup this element so it can't be reversed back to
         LastElementActual.Element.Time = 0.0f;
+        Elements[CurrentPosition].Time = 0.0f;
 
         //go back to previous element
         CurrentPosition = PreviousPosition;
