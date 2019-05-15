@@ -73,8 +73,8 @@ public class TimeControlReverseParticleSystem : MonoBehaviour
             {
                 if (particleSystems[i].main.loop)
                 {
-                    //reset back to max duration
-                    simulationTimes[i] = particleSystems[i].main.duration;
+                    //reset back to initial position
+                    simulationTimes[i] = 0.0f;
                 }
                 else
                 {
@@ -87,8 +87,7 @@ public class TimeControlReverseParticleSystem : MonoBehaviour
             {
                 if( particleSystems[i].main.loop)
                 {
-                    //reset back to 0
-                    simulationTimes[i] = 0;
+                    //if loop is set, continue emiting
                 }
                 else
                 {
