@@ -9,9 +9,9 @@ Following these steps:
   <li>1. Create a folder for new Project anywhere on your drive. (RootPath)</li>
   <li>2. Clone this repository and put it into (RootPath) ie (SharedPath)</li>
   <li>3. Create new Unity Project, put it also to the (RootPath) ie (UnityProjectPath)</li>
-  <li>4. (optional) Create Git repository for the new Unity Project</li>
-  <li>5. Open NewProjectInstallationTool.exe located in (SharedPath)</li>
-  <li>6. Follow the steps, select correct paths to (SharedPath) and (UnityProjectPath)</li>
+  <li>4. Open NewProjectInstallationTool.exe located in (SharedPath)</li>
+  <li>5. Follow the steps, select correct paths to (SharedPath) and (UnityProjectPath)</li>
+  <li>6. (optional) Create Git repository for the new Unity Project</li>
 </ul>
 
 </p>After app has finished, and depending on the options you've selected, the new Unity project should have all the default folders and symbolic links created automatically. 
