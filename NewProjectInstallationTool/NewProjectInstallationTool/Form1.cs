@@ -19,13 +19,15 @@ namespace NewProjectInstallationTool
             //source
             public const string FILE_SOURCE_GIT_ATTRIBUTES = "NewProjectFiles/template.gitattributes";
             public const string FILE_SOURCE_GIT_IGNORE = "NewProjectFiles/template.gitignore";
-            public const string FILE_SOURCE_DEFAULT_SETTINGS = "NewProjectFiles/template.SettingsConstants.cs";
+            public const string FILE_SOURCE_DEFAULT_GENERATED_SETTINGS = "NewProjectFiles/template.SettingsConstants.cs";
+            public const string FILE_SOURCE_DEFAULT_BASE_SETTINGS = "NewProjectFiles/template.SettingValueData.json";
             public const string FILE_SOURCE_DEFAULT_INPUT = "NewProjectFiles/template.InputConstants.cs";
 
             //target
             public const string FILE_TARGET_GIT_ATTRIBUTES = ".gitattributes";
             public const string FILE_TARGET_GIT_IGNORE = ".gitignore";
-            public const string FILE_TARGET_DEFAULT_SETTINGS = "Assets/Scripts/Generated/SettingsConstants.cs";
+            public const string FILE_TARGET_DEFAULT_GENERATED_SETTINGS = "Assets/Scripts/Generated/SettingsConstants.cs";
+            public const string FILE_TARGET_DEFAULT_BASE_SETTINGS = "Assets/StreamingAssets/SettingValueData.json";
             public const string FILE_TARGET_DEFAULT_INPUT = "Assets/Scripts/Generated/InputConstants.cs";
 
             //available options
@@ -81,7 +83,7 @@ namespace NewProjectInstallationTool
                 checkedListBoxItems.Items.Add(SettingAttributes.COPY_GIT_IGNORE, true);
 
                 //if files exist already - (when project has matured) have these set to false
-                bool exist = File.Exists(Path.Combine(TargetDirectory.FullName, SettingAttributes.FILE_TARGET_DEFAULT_SETTINGS));
+                bool exist = File.Exists(Path.Combine(TargetDirectory.FullName, SettingAttributes.FILE_TARGET_DEFAULT_GENERATED_SETTINGS));
                 checkedListBoxItems.Items.Add(SettingAttributes.COPY_DEFAULT_SETTINGS, !exist);
 
                 exist = File.Exists(Path.Combine(TargetDirectory.FullName, SettingAttributes.FILE_TARGET_DEFAULT_INPUT));
@@ -307,7 +309,7 @@ namespace NewProjectInstallationTool
         {
             txtResult.Text = "";
 
-            foreach(string item in checkedListBoxItems.Items)
+            foreach(string item in checkedListBoxItems.CheckedItems)
             {
                 try
                 {
@@ -328,7 +330,8 @@ namespace NewProjectInstallationTool
                             break;
 
                         case SettingAttributes.COPY_DEFAULT_SETTINGS:
-                            CopyFile(SettingAttributes.FILE_SOURCE_DEFAULT_SETTINGS, SettingAttributes.FILE_TARGET_DEFAULT_SETTINGS);
+                            CopyFile(SettingAttributes.FILE_SOURCE_DEFAULT_GENERATED_SETTINGS, SettingAttributes.FILE_TARGET_DEFAULT_GENERATED_SETTINGS);
+                            CopyFile(SettingAttributes.FILE_SOURCE_DEFAULT_BASE_SETTINGS, SettingAttributes.FILE_TARGET_DEFAULT_BASE_SETTINGS);
                             break;
 
                         case SettingAttributes.CREATE_DEFAULT_FOLDERS:

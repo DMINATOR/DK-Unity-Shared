@@ -11,8 +11,8 @@ public class SettingsConstants
 
     public enum Name
     {
-		MusicVolume,
-		SoundVolume,
+		MUSIC_VOLUME,
+		SOUND_VOLUME,
 		TIME_CONTROL_ELEMENTS_SIZE,
 		TIME_CONTROL_CHANGE_DIFFERENCE,
     }
@@ -21,7 +21,7 @@ public class SettingsConstants
     {
 		SettingsController.Instance.AddSetting(new SettingValue()
 		{
-			Name = Enum.GetName(typeof(SettingsConstants.Name), Name.MusicVolume),
+			Name = Enum.GetName(typeof(SettingsConstants.Name), Name.MUSIC_VOLUME),
 			Type = SettingValueType.Float,
 			MinValue = "0.0f",
 			DefaultValue = "0.5f",
@@ -29,7 +29,7 @@ public class SettingsConstants
 		});
 		SettingsController.Instance.AddSetting(new SettingValue()
 		{
-			Name = Enum.GetName(typeof(SettingsConstants.Name), Name.SoundVolume),
+			Name = Enum.GetName(typeof(SettingsConstants.Name), Name.SOUND_VOLUME),
 			Type = SettingValueType.Float,
 			MinValue = "0.0f",
 			DefaultValue = "0.7f",
