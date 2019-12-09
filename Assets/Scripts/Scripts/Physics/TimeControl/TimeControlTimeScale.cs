@@ -24,6 +24,17 @@ public class TimeControlTimeScale
         }
     }
 
+    /// <summary>
+    /// Raw unity delta time, when no scaling needs to be applied (ie not affected)
+    /// </summary>
+    public float UnityDeltaTime
+    {
+        get
+        {
+            return Time.deltaTime;
+        }
+    }
+
     //Name of the affection that is currently applied
     public string AffectionName
     {
