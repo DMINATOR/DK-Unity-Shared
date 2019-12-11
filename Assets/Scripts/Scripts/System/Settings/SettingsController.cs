@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Globalization;
 
 public enum SettingValueType
 {
@@ -50,15 +51,15 @@ public class SettingValue
         switch( Type )
         {
             case SettingValueType.Bool:
-                Value = Convert.ToBoolean(value).ToString();
+                Value = Convert.ToBoolean(value, System.Globalization.CultureInfo.InvariantCulture).ToString();
                 break;
 
             case SettingValueType.Float:
-                Value = Convert.ToDecimal(value).ToString();
+                Value = Convert.ToDecimal(value, System.Globalization.CultureInfo.InvariantCulture).ToString();
                 break;
 
             case SettingValueType.Integer:
-                Value = Convert.ToInt32(value).ToString();
+                Value = Convert.ToInt32(value, System.Globalization.CultureInfo.InvariantCulture).ToString();
                 break;
 
             case SettingValueType.String:
@@ -81,12 +82,12 @@ public class SettingValue
             }
             else
             {
-                return (T)Convert.ChangeType(DefaultValue, typeof(T));
+                return (T)Convert.ChangeType(DefaultValue, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
             }
         }
         else
         {
-            return (T)Convert.ChangeType(Value, typeof(T));
+            return (T)Convert.ChangeType(Value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 }
