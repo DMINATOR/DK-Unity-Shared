@@ -7,7 +7,7 @@ Following these steps:
 
 <ul>
   <li>1. Create a folder for new Project anywhere on your drive. (RootPath)</li>
-  <li>2. Clone this repository and put it into (RootPath) ie (SharedPath)</li>
+  <li>2. Clone this repository and put it inside a (RootPath) name it ie (SharedPath)</li>
   <li>3. Create new Unity Project, put it also to the (RootPath) ie (UnityProjectPath)</li>
   <li>4. Open NewProjectInstallationTool.exe located in (SharedPath)</li>
   <li>5. Follow the steps, select correct paths to (SharedPath) and (UnityProjectPath)</li>
