@@ -36,8 +36,14 @@ public class GenericDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISeria
 
     public TValue this[TKey key]
     {
-        get => dictionary[key];
-        set => dictionary[key] = value;
+        get
+        {
+            return dictionary[key];
+        }
+        set
+        {
+            dictionary[key] = value;
+        }
     }
 
     public ICollection<TKey> Keys
@@ -75,6 +81,7 @@ public class GenericDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISeria
     // Serialize dictionary into list representation.
     public void OnBeforeSerialize()
     {
+        list.Clear();
         foreach (var pair in dictionary)
         {
             var kv = new KeyValue(pair.Key, pair.Value);
@@ -101,6 +108,7 @@ public class GenericDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISeria
                 // Redundant, but removes unused reference warning.
                 if (!keyCollision)  
                 {
+                    Add(default(TKey), pair.Value);
                     keyCollision = true;
                 }
             }
