@@ -40,8 +40,25 @@ public class GenericDictionaryPropertyDrawer : PropertyDrawer
                 {
                     // Render key or value.
                     var entryPos = new Rect(currentPos.x, currentPos.y + combinedPadding, pos.width, lineHeight);
-                    EditorGUI.PropertyField(entryPos, list, new GUIContent(list.name));
-                    currentPos.y += combinedPadding;
+
+                    if (list.hasChildren)
+                    {
+                        EditorGUI.PropertyField(entryPos, list, new GUIContent($"{list.name} ({list.type})"), list.hasChildren);
+
+                        if (list.isExpanded)
+                        {
+                            currentPos.y += EditorGUI.GetPropertyHeight(list);
+                        }
+                        else
+                        {
+                            currentPos.y += combinedPadding;
+                        }
+                    }
+                    else
+                    {
+                        EditorGUI.PropertyField(entryPos, list, new GUIContent(list.name));
+                        currentPos.y += combinedPadding;
+                    }
 
                     // Add spacing after each key value pair.
                     if (list.name == "Value")
@@ -58,7 +75,7 @@ public class GenericDictionaryPropertyDrawer : PropertyDrawer
         if (keyCollision)
         {
             var entryPos = new Rect(lineHeight, currentPos.y + combinedPadding, pos.width, lineHeight * 2f);
-            EditorGUI.HelpBox(entryPos, "There are duplicate keys in the dictionary." + 
+            EditorGUI.HelpBox(entryPos, "There are duplicate keys in the dictionary." +
                 " Duplicate keys will not be serialized.", MessageType.Warning);
         }
     }
@@ -75,13 +92,40 @@ public class GenericDictionaryPropertyDrawer : PropertyDrawer
         }
 
         // Return height of KeyValue list (take into account if list is expanded or not).
-        var listProp = property.FindPropertyRelative("list");
-        if (listProp.isExpanded)
+        var list = property.FindPropertyRelative("list");
+        if (list.isExpanded)
         {
-            listProp.NextVisible(true);
-            int listSize = listProp.intValue;
-            totHeight += listSize * 2f * combinedPadding + combinedPadding * 2f + listSize * vertSpace;
-            return totHeight;
+            totHeight += combinedPadding;
+            while (true)
+            {
+                if (list.name == "Key" || list.name == "Value")
+                {
+                    if (list.hasChildren)
+                    {
+                        if (list.isExpanded)
+                        {
+                            totHeight += EditorGUI.GetPropertyHeight(list);
+                        }
+                        else
+                        {
+                            totHeight += combinedPadding;
+                        }
+                    }
+                    else
+                    {
+                        totHeight += combinedPadding;
+                    }
+
+                    // Add spacing after each key value pair.
+                    if (list.name == "Value")
+                    {
+                        totHeight += vertSpace;
+                    }
+                }
+                if (!list.NextVisible(true)) break;
+            }
+
+            return totHeight + lineHeight;
         }
         else
         {
