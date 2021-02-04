@@ -19,5 +19,18 @@ public class SharedTestWindow : EditorWindow
         {
             Debug.Log("Shared Project Editor loaded correctly!");
         }
+
+        if (GUILayout.Button("Run unit tests"))
+        {
+            try
+            {
+                RandomGeneratorTests.TestGetOneNumber();
+                Debug.LogError($"Test ok");
+            }
+            catch(System.Exception ex)
+            {
+                Debug.LogError($"Test failed = {ex.Message}");
+            } 
+        }
     }
 }
