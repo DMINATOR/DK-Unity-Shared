@@ -22,6 +22,7 @@ using UnityEngine;
 
 //So after that first bit of code, also do this:
 /// </summary>
+
 public class ContourTracer
 {
     private List<Stack<Vector2Int>> pixelPaths = new List<Stack<Vector2Int>>();
@@ -67,20 +68,20 @@ public class ContourTracer
 
         Vector2 Point() => (Vector2)points[pointIndex] * pointMultiplier - pointOffset;
 
-        if(points.Length > path.Count)
+        if (points.Length > path.Count)
         {
-            for(pointIndex = 0; pointIndex < path.Count; ++pointIndex)
+            for (pointIndex = 0; pointIndex < path.Count; ++pointIndex)
             {
                 path[pointIndex] = Point();
             }
-            for(; pointIndex < points.Length; ++pointIndex)
+            for (; pointIndex < points.Length; ++pointIndex)
             {
                 path.Add(Point());
             }
         }
         else
         {
-            for(pointIndex = 0; pointIndex < points.Length; ++pointIndex)
+            for (pointIndex = 0; pointIndex < points.Length; ++pointIndex)
             {
                 path[pointIndex] = Point();
             }
@@ -93,8 +94,8 @@ public class ContourTracer
     /// <include file='../Documentation.xml' path='docs/ContourTracer/Trace/*'/>
     public void Trace(Texture2D texture, Vector2 pivot, float pixelsPerUnit, uint gapLength, float product)
     {
-        //Debug.LogWarning($"Trace method is still missing support for InnerOuter points.");
-        //Debug.LogWarning($"Trace method is still missing support for Rect.");
+        Debug.LogWarning($"Trace method is still missing support for InnerOuter points.");
+        Debug.LogWarning($"Trace method is still missing support for Rect.");
 
         pathCount = 0;
         pointMultiplier = 1 / pixelsPerUnit;
@@ -122,12 +123,13 @@ public class ContourTracer
             int pixelIndex = _y * texture.width + _x;
             return isSolid(pixels[pixelIndex]); //.r != 0f;
         }
+
         bool IsBorderSafe(int _x, int _y) => _y >= 0 && _y < texture.height && _x >= 0 && _x < texture.width && IsBorder(_x, _y);
 
         void TurnPos(ref int _x, ref int _y)
         {
             int tempX;
-            switch(direction)
+            switch (direction)
             {
                 case Direction.Right:
                     tempX = _x;
@@ -160,14 +162,14 @@ public class ContourTracer
 
         void Encode(Code _code)
         {
-            switch(_code)
+            switch (_code)
             {
                 case Code.Inner:
-                    if(code != Code.Outer)
+                    if (code != Code.Outer)
                     {
-                        if(code == Code.Straight)
+                        if (code == Code.Straight)
                         {
-                            if(lastLineCode == Code.Inner)
+                            if (lastLineCode == Code.Inner)
                             {
                                 var lastPoint = stack.Pop();
                                 Smooth();
@@ -184,7 +186,7 @@ public class ContourTracer
                                 //lastDir = Vector2.zero;
                                 //list.Add(point);
                             }
-                            else if(lineLength >= maxLineLength)
+                            else if (lineLength >= maxLineLength)
                             {
                                 stack.Push(point);
                                 //list.Add(point);
@@ -201,20 +203,20 @@ public class ContourTracer
                     lineLength = 0;
                     break;
                 case Code.InnerOuter:
-                    if(code != Code.InnerOuter)
+                    if (code != Code.InnerOuter)
                     {
                         stack.Push(point);
                         //list.Add(point);
                     }
                     break;
                 case Code.Straight:
-                    if(code != Code.Straight)
+                    if (code != Code.Straight)
                     {
                         lastLineCode = code;
 
-                        if(code == Code.Outer)
+                        if (code == Code.Outer)
                         {
-                            if(stack.Peek() == point)
+                            if (stack.Peek() == point)
                             {
                                 break;
                             }
@@ -229,11 +231,11 @@ public class ContourTracer
                     ++lineLength;
                     break;
                 case Code.Outer:
-                    if(code != Code.Inner)
+                    if (code != Code.Inner)
                     {
-                        if(code == Code.Straight)
+                        if (code == Code.Straight)
                         {
-                            if(lastLineCode != Code.Inner || lineLength > maxLineLength)
+                            if (lastLineCode != Code.Inner || lineLength > maxLineLength)
                             {
                                 maxLineLength = float.PositiveInfinity;
                                 lastDir = Vector2.zero;
@@ -245,9 +247,9 @@ public class ContourTracer
                                 Smooth();
                             }
                         }
-                        else if(code == Code.Outer)
+                        else if (code == Code.Outer)
                         {
-                            if(stack.Peek() == point)
+                            if (stack.Peek() == point)
                             {
                                 break;
                             }
@@ -284,7 +286,7 @@ public class ContourTracer
         {
             //Vector2 lastPoint = list[list.Count - 1];
             var dir = (point - (Vector2)stack.Peek()).normalized;
-            if(Vector2.Dot(dir, lastDir) > product)
+            if (Vector2.Dot(dir, lastDir) > product)
             {
                 //list.RemoveAt(list.Count - 1);
                 stack.Pop();
@@ -294,12 +296,12 @@ public class ContourTracer
         }
         #endregion
 
-        for(point.x = 0; point.x < texture.width; ++point.x)
+        for (point.x = 0; point.x < texture.width; ++point.x)
         {
-            for(point.y = 0; point.y < texture.height; ++point.y)
+            for (point.y = 0; point.y < texture.height; ++point.y)
             {
                 // Scan for non-transparent pixel
-                if(found.Contains(point))
+                if (found.Contains(point))
                 {
                     // Entering an already discovered border
                     inside = true;
@@ -307,14 +309,14 @@ public class ContourTracer
                 }
 
                 bool isBorder = N0();
-                if(inside)
+                if (inside)
                 {
                     inside = isBorder;
                     continue;
                 }
-                else if(isBorder)
+                else if (isBorder)
                 {
-                    if(pathCount >= pixelPaths.Count)
+                    if (pathCount >= pixelPaths.Count)
                     {
                         //pixelPaths.Add(new List<Vector2Int>());
                         pixelPaths.Add(new Stack<Vector2Int>());
@@ -335,9 +337,9 @@ public class ContourTracer
                     do
                     {
                         // Stage 1
-                        if(N1())
+                        if (N1())
                         {
-                            if(N2())
+                            if (N2())
                             {
                                 // Case 1
                                 Encode(Code.Inner);
@@ -354,7 +356,7 @@ public class ContourTracer
                         }
                         else
                         {
-                            if(N2())
+                            if (N2())
                             {
                                 // Case 3
                                 Encode(Code.Straight);
@@ -369,9 +371,9 @@ public class ContourTracer
                         }
 
                         // Stage 2
-                        if(N3())
+                        if (N3())
                         {
-                            if(N4())
+                            if (N4())
                             {
                                 // Case 6
                                 Encode(Code.Inner);
@@ -384,7 +386,7 @@ public class ContourTracer
                                 Move(-1, 1);
                             }
                         }
-                        else if(N4())
+                        else if (N4())
                         {
                             // Case 7
                             Encode(Code.Straight);
@@ -397,9 +399,9 @@ public class ContourTracer
                             Encode(Code.Outer);
                             Turn(Direction.Rear);
                         }
-                    } while(point != startPoint || direction != startDirection);
+                    } while (point != startPoint || direction != startDirection);
 
-                    if(code == Code.Straight && lastLineCode == Code.Inner)
+                    if (code == Code.Straight && lastLineCode == Code.Inner)
                     {
                         //list.RemoveAt(list.Count - 1);
                         stack.Pop();
@@ -407,7 +409,7 @@ public class ContourTracer
 
                     Smooth();
 
-                    if(stack.Count >= 3)
+                    if (stack.Count >= 3)
                     {
                         ++pathCount;
                     }
