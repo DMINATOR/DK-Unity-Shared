@@ -28,8 +28,9 @@ public class BackgroundParallax : MonoBehaviour
         // Calculate initial positions of the sprite renderers
         foreach(var layer in Locator.Layers)
         {
-            layer.StartPosition = layer.SpriteRenderer.gameObject.transform.position.x;
-            layer.Length = layer.SpriteRenderer.bounds.size.x;
+            layer.StartPositionX = layer.SpriteRenderer.gameObject.transform.position.x;
+            layer.StartPositionY = layer.SpriteRenderer.gameObject.transform.position.y;
+            layer.LengthX = layer.SpriteRenderer.bounds.size.x;
         }
 
         //startPosition = transform.position.x;
@@ -49,22 +50,28 @@ public class BackgroundParallax : MonoBehaviour
     {
         // Calculate camera relative positions
         float cameraPosition = transform.position.x * (1 - layer.ParallaxEffect);
-        float distance = transform.position.x * layer.ParallaxEffect;
+        float distanceHorizontal = transform.position.x * layer.ParallaxEffect;
+        float distanceVertical = transform.position.y * layer.ParallaxEffect;
 
         // Get current layer position
         var layerTransformPosition = layer.SpriteRenderer.gameObject.transform.position;
 
         // Calculate new position for the layer
-        layer.SpriteRenderer.gameObject.transform.position = new Vector3(layer.StartPosition + distance, layerTransformPosition.y, layerTransformPosition.z);
+        layer.SpriteRenderer.gameObject.transform.position = new Vector3(
+            layer.StartPositionX + distanceHorizontal,
+            layer.StartPositionY + distanceVertical,
+            layerTransformPosition.z );
+
+        Debug.Log($"{distanceHorizontal}, {distanceVertical}");
 
         // Correct if moved outside of the layer bounds
-        if (cameraPosition > layer.StartPosition + layer.Length)
+        if (cameraPosition > layer.StartPositionX + layer.LengthX)
         {
-            layer.StartPosition += layer.Length;
+            layer.StartPositionX += layer.LengthX;
         }
-        else if (cameraPosition < layer.StartPosition - layer.Length)
+        else if (cameraPosition < layer.StartPositionX - layer.LengthX)
         {
-            layer.StartPosition -= layer.Length;
+            layer.StartPositionX -= layer.LengthX;
         }
     }
 }

@@ -15,10 +15,14 @@ public class BackgroundParallaxLayer
     [Header("Calculated")]
 
     [ReadOnly]
-    [Tooltip("Calculated layer startPosition")]
-    public float StartPosition;
+    [Tooltip("Calculated layer startPosition X")]
+    public float StartPositionX;
+
+    [ReadOnly]
+    [Tooltip("Calculated layer startPosition Y")]
+    public float StartPositionY;
 
     [ReadOnly]
     [Tooltip("Calculated length of the SpriteRenderer bounds")]
-    public float Length;
+    public float LengthX;
 }

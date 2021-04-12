@@ -56,7 +56,7 @@ public class MoveOnKey : MonoBehaviour
         {
             vertical = Input.GetAxis(ButtonMoveVertical.KeyName) * MovementForce * _instance.TimeScaleDelta;
 
-            vector += Vector3.forward * vertical;
+            vector += Vector3.up * vertical;
         }
 
         float rotation = Input.GetAxis(ButtonRotation.KeyName) * RotationForce * _instance.TimeScaleDelta * Mathf.PI;
